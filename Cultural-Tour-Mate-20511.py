@@ -64,7 +64,7 @@ translations = {
 }
 
 # 选择语言
-language = st.selectbox("🌐 Select Language EN/CN | 支持中英文", ["English", "中文"])
+language = st.selectbox("🌐 Language / 语言", ["English", "中文"])
 lang_map = {"English": "en", "中文": "zh"}
 lang_code = lang_map[language]
 t = translations[lang_code]
@@ -94,7 +94,7 @@ if avatar_url:
     }}
     </style><img class="avatar-bg" src="{avatar_url}" />
     """, unsafe_allow_html=True)
-
+# =========== 页面UI =========== 
 st.title(t["title"])
 st.markdown(t["slogan"])
 st.caption(t["developer"])
@@ -152,7 +152,7 @@ if uploaded_image:
         st.image(image, caption=t["photo_uploaded"], use_container_width=True)
         image_part = {"mime_type": "image/jpeg", "data": compressed}
 
-# 用户提问输入
+# ========= 用户提问输入 ==========
 st.markdown("### " + t["desc"])
 prompt = st.text_input(t["input_placeholder"])
 
