@@ -186,10 +186,17 @@ if uploaded_image:
 st.markdown("---")
 st.markdown("### " + t["user_role"])
 
+# ========== 提问发送函数 ==========
 def submit_question():
-    if st.session_state.get("text_input", "").strip():
+    # 判断是否有上传或拍摄图片
+    if not image_part:
+        st.warning("⚠️ You have to upload a picture before asking a question.")
+        return
+
+    user_text = st.session_state.get("text_input", "").strip()
+    if user_text:
         messages = fetch_conversation_history()
-        messages.append({"role": "user", "parts": st.session_state["text_input"]})
+        messages.append({"role": "user", "parts": user_text})
 
         progress_text = "⏳ Please wait while I analyze your question and image..."
         my_bar = st.progress(0, text=progress_text)
@@ -198,7 +205,7 @@ def submit_question():
             my_bar.progress(percent_complete, text=progress_text)
 
         with st.spinner("🧠 Generating response..."):
-            response = generate_reply(messages, st.session_state["text_input"], image_part)
+            response = generate_reply(messages, user_text, image_part)
 
         my_bar.progress(100, text="✅ Done!")
 
@@ -210,16 +217,22 @@ def submit_question():
             st.session_state["messages"] = messages
         st.session_state["text_input"] = ""
 
-# ==========同行布局：文本框 + 发送按钮==========
-col1, col2 = st.columns([5, 1])  # 比例可根据需要调整，5:1 表示文本框较宽
+# ========== 输入 + 按钮布局 ==========
+col1, col2 = st.columns([5, 1])
 
 with col1:
-    st.text_input(label="", placeholder=t["input_placeholder"], key="text_input")
+    st.text_input(
+        label="",
+        placeholder=t["input_placeholder"],
+        key="text_input",
+        on_change=submit_question  # 支持按 Enter 发送
+    )
 
 with col2:
-    st.write("")  # 用于对齐按钮垂直位置
+    st.markdown("<div style='height: 2em;'></div>", unsafe_allow_html=True)  # 按钮下对齐
     st.button(t["send"], on_click=submit_question)
 
+    
 # ========== 对话历史 ==========
 st.markdown("---")
 st.subheader("🗨️ Conversation History")
