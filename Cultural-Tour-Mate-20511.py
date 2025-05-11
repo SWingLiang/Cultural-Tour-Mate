@@ -111,30 +111,29 @@ def compress_image(image, max_size=(800, 800), quality=80):
     return buffer.getvalue()
 
 # ================上传图像 & 拍照=================
-# image = None
-# image_part = None
+image_part = None  # 全局声明一次
 
-# ========== 摄像头拍照处理 ===========
+# 摄像头说明区域
 st.markdown("### " + t["camera"])
 st.markdown(t["camera_sub"])
 st.caption(t["camera_note"])
 
-# 使用 session_state 检测是否已有照片
-camera_image = st.camera_input(t["camera_on"])
+if "show_camera" not in st.session_state:
+    st.session_state["show_camera"] = False
 
 if st.button(t["camera_on"]):
-	st.session_state["show_camera"] = True
+    st.session_state["show_camera"] = True
 
-if st.session_state.get("show_camera", False):
-	camera_image = st.camera_input(t["camera_on"])
-	if camera_image is not None:
-		if len(camera_image.getvalue()) > 3 * 1024 * 1024:
-			st.warning(t["oversize_error"])
-		else:
-			image = Image.open(camera_image)
-			compressed = compress_image(image)
-			st.success(t["photo_success"])
-			image_part = {"mime_type": "image/jpeg", "data": compressed}
+if st.session_state["show_camera"]:
+    camera_image = st.camera_input("camera_capture")  # 注意label唯一
+    if camera_image:
+        if len(camera_image.getvalue()) > 3 * 1024 * 1024:
+            st.warning(t["oversize_error"])
+        else:
+            image = Image.open(camera_image)
+            compressed = compress_image(image)
+            image_part = {"mime_type": "image/jpeg", "data": compressed}
+            st.image(image, caption=t["photo_success"], use_container_width=True)
 
 # ================ 上传图像  ==================
 st.markdown("---")
