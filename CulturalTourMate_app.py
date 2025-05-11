@@ -117,58 +117,53 @@ st.session_state["messages"] = [
 {"role": "user", "parts": "system prompt: You are CulturalTourMate..."}
 ]
 
-# =========== 图像压缩 =========== 
-
+# ==============图像压缩处理==============
 def compress_image(image, max_size=(800, 800), quality=80):
-image.thumbnail(max_size)
-buffer = BytesIO()
-image.save(buffer, format="JPEG", quality=quality)
-return buffer.getvalue()
+    image.thumbnail(max_size)
+    buffer = BytesIO()
+    image.save(buffer, format="JPEG", quality=quality)
+    return buffer.getvalue()
 
-# =========== 拍照上传 =========== 
+# ================上传图像 & 拍照=================
+image_part = None  # 全局声明一次
 
-image = None
-image_part = None
-
+# 摄像头说明区域
 st.markdown("### " + t["camera"])
 st.markdown(t["camera_sub"])
 st.caption(t["camera_note"])
 
-if "camera_on" not in st.session_state:
-st.session_state["camera_on"] = False
+if "show_camera" not in st.session_state:
+    st.session_state["show_camera"] = False
 
 if st.button(t["camera_on"]):
-st.session_state["camera_on"] = True
+    st.session_state["show_camera"] = True
 
-if st.session_state["camera_on"]:
-camera_image = st.camera_input("")
+if st.session_state["show_camera"]:
+    camera_image = st.camera_input("camera_capture")  # 注意label唯一
+    if camera_image:
+        if len(camera_image.getvalue()) > 3 * 1024 * 1024:
+            st.warning(t["oversize_error"])
+        else:
+            image = Image.open(camera_image)
+            compressed = compress_image(image)
+            image_part = {"mime_type": "image/jpeg", "data": compressed}
+            st.image(image, caption=t["photo_captured"], use_container_width=True)
 
-
-if camera_image:
-    if len(camera_image.getvalue()) > 3 * 1024 * 1024:
-        st.warning(t["oversize_error"])
-    else:
-        image = Image.open(camera_image)
-        compressed = compress_image(image)
-        st.image(image, caption=t["photo_success"], use_container_width=True)
-        image_part = {"mime_type": "image/jpeg", "data": compressed}
-
-# ======== 照片上传 =========
-
+# ================ 上传图像  ==================
 st.markdown("---")
 st.markdown("### " + t["upload"])
 st.markdown(t["upload_note"])
 
 uploaded_image = st.file_uploader(label="", type=["jpg", "jpeg", "png"])
 if uploaded_image:
-if uploaded_image.size > 3 * 1024 * 1024:
-st.warning(t["oversize_error"])
-else:
-image = Image.open(uploaded_image)
-compressed = compress_image(image)
-st.image(image, caption="Selected Image", use_container_width=True)
-mime_type, _ = mimetypes.guess_type(uploaded_image.name)
-image_part = {"mime_type": mime_type or "image/jpeg", "data": compressed}
+    if uploaded_image.size > 3 * 1024 * 1024:
+        st.warning(t["oversize_error"])
+    else:
+        image = Image.open(uploaded_image)
+        compressed = compress_image(image)
+        st.image(image, caption=t["photo_uploaded"], use_container_width=True)
+        image_part = {"mime_type": "image/jpeg", "data": compressed}
+
 
 # ============== 提问函数 ===============
 
