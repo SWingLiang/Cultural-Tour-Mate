@@ -5,7 +5,7 @@ import os
 from PIL import Image
 
 # ========== 页面配置 ==========
-st.set_page_config(page_title="🏛️Cultural-Tour-Mate🧧", layout="centered")
+st.set_page_config(page_title="Cultural-Tour-Mate", layout="centered")
 
 # ========== 加载 API Key ==========
 dotenv.load_dotenv()
@@ -15,7 +15,7 @@ genai.configure(api_key=api_key)
 # ========== 多语言支持 ==========
 translations = {
     "en": {
-        "title": "Cultural-Tour-Mate",
+        "title": "🏛️Cultural-Tour-Mate🤖",
         "slogan": "Your trustworthy, insightful, and articulate cultural companion in tour.",
         "upload": "🖼️ Upload Image",
         "camera": "📷 Capture Photo",
@@ -31,8 +31,8 @@ translations = {
         "input_placeholder": "Type your question here..."
     },
     "zh": {
-        "title": "AI文化旅伴",
-        "slogan": "您诚实而智慧的旅行伙伴。",
+        "title": "🏛️AI文化旅伴🤖",
+        "slogan": "您忠实博学且智慧的文化旅行小伙伴。",
         "upload": "🖼️ 上传图像",
         "camera": "📷 现场拍照",
         "camera_on": "📸 打开相机",
@@ -49,7 +49,7 @@ translations = {
 }
 
 # ========== 语言选择 ==========
-language = st.selectbox("🌐 Select Language / 支持中文", ["English", "中文"])
+language = st.selectbox("🌐 Select Language EN/CN | 支持中英文", ["English", "中文"])
 lang_map = {"English": "en", "中文": "zh"}
 lang_code = lang_map[language]
 t = translations[lang_code]
@@ -72,7 +72,7 @@ if avatar_url:  # Only apply if the URL is valid
         position: fixed;
         bottom: 0px;
         left: 10px;
-        height: 38.2vh;
+        height: 45vh;
         opacity: 0.5;
         z-index: 0;
     }}
