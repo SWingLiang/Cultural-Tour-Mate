@@ -111,8 +111,8 @@ def compress_image(image, max_size=(800, 800), quality=80):
     return buffer.getvalue()
 
 # ================上传图像 & 拍照=================
-image = None
-image_part = None
+# image = None
+# image_part = None
 
 # ========== 摄像头拍照处理 ===========
 st.markdown("### " + t["camera"])
