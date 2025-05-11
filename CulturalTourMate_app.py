@@ -66,8 +66,8 @@ if avatar_url:  # Only apply if the URL is valid
     <style>
     .avatar-bg {{
         position: fixed;
-        bottom: 20px;
-        left: 20px;
+        bottom: 0px;
+        left: 10px;
         height: 38.2vh;
         opacity: 0.5;
         z-index: 0;
