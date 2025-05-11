@@ -109,11 +109,13 @@ def generate_reply(messages, user_input, image_part=None):
         chat = model.start_chat(history=messages)
 
         if image_part:
-            image_part_obj = Part.from_data(
-                data=image_part["data"],
-                mime_type=image_part["mime_type"]
-            )
-            response = chat.send_message([user_input, image_part_obj])
+            response = chat.send_message([
+                user_input,
+                {
+                    "mime_type": image_part["mime_type"],
+                    "data": image_part["data"]
+                }
+            ])
         else:
             response = chat.send_message(user_input)
 
