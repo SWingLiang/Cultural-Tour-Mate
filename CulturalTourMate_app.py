@@ -117,14 +117,15 @@ def generate_reply(messages, user_input, image_part=None):
 image_part = None
 image = None
 
+st.markdown("### " + t["camera"])
+st.caption(t["camera_sub"])
+st.caption(t["camera_note"])
+st.markdown("---")
 st.markdown("### " + t["upload"])
 #st.caption(t["upload_note"])file_uploader
 uploaded_image = st.file_uploader(t["upload_note"], type=["jpg", "jpeg", "png"])
 
-st.markdown("---")
-st.markdown("### " + t["camera"])
-st.caption(t["camera_sub"])
-st.caption(t["camera_note"])
+
 # ========== 控制相机是否显示 ============
 if st.button(t["camera_on"]):  
     camera_image = st.camera_input("")
@@ -149,7 +150,7 @@ if image:
 st.markdown("---")
 user_input = st.text_input("You:", placeholder=t["input_placeholder"], key="text_input")
 
-if st.button(t["ask"]):  # ✅ 添加发送按钮
+if st.button(t["ask"]):  # =====添加发送按钮========
     if user_input:
         messages = fetch_conversation_history()
         messages.append({"role": "user", "parts": user_input})
