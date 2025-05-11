@@ -5,6 +5,7 @@ import os
 import mimetypes
 import time
 from PIL import Image
+from io import BytesIO
 
 
 # ========== 页面配置 ==========
@@ -102,7 +103,7 @@ def fetch_conversation_history():
             }
         ]
     return st.session_state["messages"]
-
+    
 # ========== Gemini 回复 ==========
 def generate_reply(messages, user_input, image_part=None):
     try:
@@ -126,7 +127,7 @@ def generate_reply(messages, user_input, image_part=None):
         st.error("⚠️ Gemini API request failed. Check your network or API Key.")
         st.text_area("Error details", traceback.format_exc(), height=200)
         return str(e)
-
+        
 # ========== 上传与拍照 ==========
 
 image = None
@@ -160,27 +161,40 @@ if uploaded_image:
 
 if image:
     st.image(image, caption="Selected Image", use_container_width=True)
+# ============ 自动压缩图片再上传（提高计算速度） ================
+def compress_image(img: Image.Image, max_size=1000):
+    img.thumbnail((max_size, max_size))
+    buf = BytesIO()
+    img.save(buf, format="JPEG", quality=85)
+    return buf.getvalue()
+
+# 在用户上传或拍照后添加：
+compressed_data = compress_image(image)
+image_part = {
+    "mime_type": "image/jpeg",
+    "data": compressed_data
+}
 
 # ========== 用户提问 ==========
 st.markdown("---")
 st.markdown("### " + t["user_role"])
-user_input = st.text_input(" ", placeholder=t["input_placeholder"], key="text_input")
 
-if st.button(t["ask"]):
-    if user_input:
+# 提交函数
+def submit_question():
+    if st.session_state["text_input"]:
         messages = fetch_conversation_history()
-        messages.append({"role": "user", "parts": user_input})
-        
+        messages.append({"role": "user", "parts": st.session_state["text_input"]})
+
         # 模拟加载进度条
         progress_text = "⏳ Please wait while I analyze your question and image..."
         my_bar = st.progress(0, text=progress_text)
 
-        for percent_complete in range(1, 91):  # 1% 到 90% 模拟加载
-            time.sleep(0.03)  # 调整这个值可以控制加载条速度
+        for percent_complete in range(1, 91):
+            time.sleep(0.02)
             my_bar.progress(percent_complete, text=progress_text)
 
         with st.spinner("🧠 Generating response..."):
-            response = generate_reply(messages, user_input, image_part)
+            response = generate_reply(messages, st.session_state["text_input"], image_part)
 
         my_bar.progress(100, text="✅ Done!")
 
@@ -190,6 +204,19 @@ if st.button(t["ask"]):
             bot_reply = response.candidates[0].content.parts[0].text
             messages.append({"role": "model", "parts": bot_reply})
             st.session_state["messages"] = messages
+        st.session_state["text_input"] = ""  # 清空输入框
+
+# 输入框，绑定 on_change 事件
+st.text_input(
+    " ",
+    placeholder=t["input_placeholder"],
+    key="text_input",
+    on_change=submit_question
+)
+
+# 如果用户点击按钮，也触发提交函数
+if st.button(t["ask"]):
+    submit_question()
 
 # ========== 对话历史 ==========
 st.markdown("---")
