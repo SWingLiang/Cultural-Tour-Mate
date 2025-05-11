@@ -15,7 +15,7 @@ genai.configure(api_key=api_key)
 # ========== 多语言支持 ==========
 translations = {
     "en": {
-        "title": "🏛️Cultural-Tour-Mate🤖",
+        "title": "🏛️Cultural-Tour-Mate",
         "slogan": "Your trustworthy, insightful, and articulate cultural companion in tour.",
         "upload": "🖼️ Upload Image",
         "camera": "📷 Capture Photo",
@@ -26,12 +26,12 @@ translations = {
         "response": "Cultural Insight",
         "feedback": "Was this helpful? Feel free to ask more.",
         "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
-        "upload_note": "Select and upload an image from your device, image is limited 200M.",
+        "upload_note": "Select and upload an image from your device, the image is limited to 200 MB.",
         "camera_note": "Due to technical limitations, only the front camera is supported. Suggest upload photos.",
         "input_placeholder": "Type your question here..."
     },
     "zh": {
-        "title": "🏛️AI文化旅伴🤖",
+        "title": "🏛️AI文化旅伴",
         "slogan": "您忠实博学且智慧的文化旅行小伙伴。",
         "upload": "🖼️ 上传图像",
         "camera": "📷 现场拍照",
@@ -148,7 +148,7 @@ if image:
 
 # ========== 用户输入与发送按钮 ==========
 st.markdown("---")
-user_input = st.text_input("You:", placeholder=t["input_placeholder"], key="text_input")
+user_input = st.text_input("Ask:", placeholder=t["input_placeholder"], key="text_input")
 
 if st.button(t["ask"]):  # =====添加发送按钮========
     if user_input:
