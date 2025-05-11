@@ -2,7 +2,9 @@ import streamlit as st
 import google.generativeai as genai
 import dotenv
 import os
+import mimetypes
 from PIL import Image
+from google.generativeai.types.content_types import Part  # 添加这行确保 image_part 构造正确
 
 # ========== 页面配置 ==========
 st.set_page_config(page_title="Cultural-Tour-Mate", layout="centered")
@@ -106,18 +108,30 @@ def fetch_conversation_history():
 # ========== Gemini 回复 ==========
 def generate_reply(messages, user_input, image_part=None):
     try:
-        chat = genai.GenerativeModel("gemini-pro-vision").start_chat(history=messages)
+        model = genai.GenerativeModel("gemini-pro-vision")
+        chat = model.start_chat(history=messages)
+
         if image_part:
-            response = chat.send_message([user_input, image_part])
+            # =====转换 image_part 为 Gemini API 需要的格式=======
+            image_part_obj = Part.from_data(
+                data=image_part["data"],
+                mime_type=image_part["mime_type"]
+            )
+            response = chat.send_message([user_input, image_part_obj])
         else:
             response = chat.send_message(user_input)
+
         return response
     except Exception as e:
+        import traceback
+        st.error("⚠️ Gemini API The request failed. Please check the network or API Key configuration.")
+        st.text_area("Error details", traceback.format_exc(), height=200)
         return str(e)
 
 # ========== 上传与拍照（互斥选择） ==========
 image_part = None
 image = None
+mime_type, _ = mimetypes.guess_type(uploaded_image.name)
 
 st.markdown("### " + t["camera"])
 st.markdown(t["camera_sub"])
