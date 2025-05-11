@@ -46,7 +46,7 @@ translations = {
         "upload_note": "从您的设备中选择并上传一张图片，大小不超过200M。",
         "camera_note": "由于技术限制，目前仅支持前置摄像头，建议上传照片。",
         "input_placeholder": "请输入您的问题...",
-        "user_role": "💬请问"
+        "user_role": "### " + "💬请问"
     }
 }
 
@@ -150,7 +150,7 @@ if image:
 
 # ========== 用户输入与发送按钮 ==========
 st.markdown("---")
-user_input = st.text_input("### " + t["user_role"], placeholder=t["input_placeholder"], key="text_input")
+user_input = st.text_input(t["user_role"], placeholder=t["input_placeholder"], key="text_input")
 
 if st.button(t["ask"]):  # =====添加发送按钮========
     if user_input:
