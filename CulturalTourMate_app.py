@@ -220,11 +220,11 @@ def submit_question():
 col1, col2 = st.columns([5, 1])
 
 with col1:
-st.text_input(t["desc"], placeholder=t["input_placeholder"], key="text_input", on_change=submit_question)
+    st.text_input(t["desc"], placeholder=t["input_placeholder"], key="text_input", on_change=submit_question)
 
 with col2:
-st.markdown("<div style='height: 2em;'></div>", unsafe_allow_html=True)
-st.button(t["send"], on_click=submit_question)
+    st.markdown("<div style='height: 2em;'></div>", unsafe_allow_html=True)
+    st.button(t["send"], on_click=submit_question)
 
 st.markdown("---")
 st.subheader("💬 Conversation History")
