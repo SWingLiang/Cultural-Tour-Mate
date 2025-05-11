@@ -24,17 +24,18 @@ translations = {
         "camera": "📷 Capture Photo",
         "camera_on": "📸 Take a shot",
         "camera_sub": "Any cultural troubles during the tour, please take a photo and ask me.",
-        "desc": "Describe what you want to learn about the image:",
+        "desc": "💬 Ask your matter",
         "send": "🧤 Send",
         "response": "Cultural Insight",
         "feedback": "Was this helpful? Feel free to ask more.",
         "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
         "upload_note": "Select and upload an image from your device, the image is limited to 2 MB.",
         "camera_note": "Due to limitations, rear camera might not be accessible on tablets. Try phone or upload a photo.",
-        "input_placeholder": "Type your question here...",
+        "input_placeholder": "Describe what you want to learn about the image...",
         "user_role": "💬 Ask anything",
         "oversize_error": "🚫 Image exceeds 3MB limit. Please upload a smaller image.",
         "no_camera": "⚠️ No camera available on this device.",
+        "warning_image_and_question": "Please provide both an image and a question.",
         "photo_success": "✅ Photo captured successfully."
     },
     "zh": {
@@ -44,17 +45,18 @@ translations = {
         "camera": "📷 环境拍照",
         "camera_on": "📸 打开相机",
         "camera_sub": "旅途中的文化困扰，请随手拍一张照片问问我。",
-        "desc": "描述您想了解的图像内容：",
+        "desc": "描述问题",
         "send": "🧤 发送",
         "response": "文化背景信息",
         "feedback": "这个回答有帮助吗？欢迎继续提问。",
         "developer": "开发者：梁贤荣(Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh",
         "upload_note": "从您的设备中选择并上传一张图片，大小不超2M。",
         "camera_note": "由于技术限制，部分平板不支持后置摄像头，建议使用手机或上传照片。",
-        "input_placeholder": "请输入您的问题...",
+        "input_placeholder": "描述您想了解的图像内容...",
         "user_role": "💬 请您提问",
         "oversize_error": "🚫 图像大小超过3MB限制，请重新选择。",
         "no_camera": "⚠️ 当前设备无可用摄像头。",
+        "warning_image_and_question": "请同时提供图片和问题。",
         "photo_success": "✅ 拍照成功。"
     }
 }
@@ -112,21 +114,23 @@ def compress_image(image, max_size=(800, 800), quality=80):
 image = None
 image_part = None
 
+# ========== 摄像头拍照处理 ==========
 st.markdown("### " + t["camera"])
 st.markdown(t["camera_sub"])
 st.caption(t["camera_note"])
 
-show_camera = st.button(t["camera_on"])
-if show_camera:
-    camera_image = st.camera_input("")
-    if camera_image:
-        if len(camera_image.getvalue()) > 3 * 1024 * 1024:
-            st.warning(t["oversize_error"])
-        else:
-            image = Image.open(camera_image)
-            compressed = compress_image(image)
-            st.image(image, caption=t["photo_success"], use_container_width=True)
-            image_part = {"mime_type": "image/jpeg", "data": compressed}
+# 使用 session_state 检测是否已有照片
+camera_image = st.camera_input(t["camera_on"])
+
+if camera_image is not None:
+    if len(camera_image.getvalue()) > 3 * 1024 * 1024:
+        st.warning(t["oversize_error"])
+    else:
+        image = Image.open(camera_image)
+        compressed = compress_image(image)
+        st.image(image, caption=t["photo_success"], use_container_width=True)
+        image_part = {"mime_type": "image/jpeg", "data": compressed}
+
 
 st.markdown("---")
 st.markdown("### " + t["upload"])
@@ -159,5 +163,5 @@ if st.button(t["send"]):
             st.markdown(response.text)
             st.info(t["feedback"])
     else:
-        st.warning("❗ Please provide both an image and a question.")
+        st.warning("❗ " + t["warning_image_and_question"])
 
