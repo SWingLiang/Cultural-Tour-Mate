@@ -19,14 +19,15 @@ translations = {
         "slogan": "Your trustworthy, insightful, and articulate cultural companion in tour.",
         "upload": "🖼️ Upload Image",
         "camera": "📷 Capture Photo",
-        "camera_on": "📸 Open Camera",
+        "camera_on": "📸 Take a shot",
+        "camera_sub": "Cultural troubles during the tour, please take a photo and ask me anything",
         "desc": "Describe what you want to learn about the image:",
         "ask": "Send",
         "response": "Cultural Insight",
         "feedback": "Was this helpful? Feel free to ask more.",
         "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
         "upload_note": "Select and upload an image from your device, image is limited 200M.",
-        "camera_note": "Due to technical limitations, only the front camera is supported.",
+        "camera_note": "Due to technical limitations, only the front camera is supported. Suggest upload photos",
         "input_placeholder": "Type your question here..."
     },
     "zh": {
@@ -35,6 +36,7 @@ translations = {
         "upload": "🖼️ 上传图像",
         "camera": "📷 现场拍照",
         "camera_on": "📸 打开相机",
+        "camera_sub": "旅途中的文化困扰，请随手拍一张照片问问我",
         "desc": "描述您想了解的图像内容：",
         "ask": "发送",
         "response": "文化背景信息",
@@ -121,9 +123,10 @@ uploaded_image = st.file_uploader(t["upload_note"], type=["jpg", "jpeg", "png"])
 
 st.markdown("---")
 st.markdown("### " + t["camera"])
+st.caption(t["camera_sub"])
 st.caption(t["camera_note"])
 # ========== 控制相机是否显示 ============
-if st.button(t["camera"]):  
+if st.button(t["camera_on"]):  
     camera_image = st.camera_input("")
     if camera_image:
         image = Image.open(camera_image)
