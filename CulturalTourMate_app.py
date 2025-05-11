@@ -168,7 +168,7 @@ st.markdown("---")
 st.markdown("### " + t["upload"])
 st.markdown(t["upload_note"])
 
-uploaded_image = st.file_uploader(" ", type=["jpg", "jpeg", "png"])
+uploaded_image = st.file_uploader(label="", type=["jpg", "jpeg", "png"])
 if uploaded_image:
     if uploaded_image.size > 3 * 1024 * 1024:
         st.warning(t["oversize_error"])
@@ -213,7 +213,7 @@ def submit_question():
 # 同行布局：文本框 + 发送按钮
 input_col, button_col = st.columns([0.8, 0.2])
 with input_col:
-    st.text_input("", placeholder=t["input_placeholder"], key="text_input")
+    st.text_input(label="", placeholder=t["input_placeholder"], key="text_input")
 with button_col:
     st.button(t["ask"], on_click=submit_question)
 
