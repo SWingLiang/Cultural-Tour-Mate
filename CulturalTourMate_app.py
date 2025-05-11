@@ -22,7 +22,7 @@ translations = {
         "upload": "🖼️ Upload Image",
         "camera": "📷 Capture Photo",
         "camera_on": "📸 Take a shot",
-        "camera_sub": "Any ultural troubles during the tour, please take a photo and ask me.",
+        "camera_sub": "Any cultural troubles during the tour, please take a photo and ask me.",
         "desc": "Describe what you want to learn about the image:",
         "ask": "Send🦄",
         "response": "Cultural Insight",
@@ -63,13 +63,10 @@ avatar_urls = {
     "en": "https://static.vecteezy.com/system/resources/previews/055/495/027/non_2x/a-man-in-a-white-t-shirt-and-jeans-free-png.png",
     "zh": "https://static.vecteezy.com/system/resources/previews/013/167/583/original/portrait-of-a-smiling-asian-woman-cutout-file-png.png",
 }
+avatar_url = avatar_urls.get(lang_code, '')
 
 # ========== Avatar 背景样式 ==========
-# Debugging the URL path first
-avatar_url = avatar_urls.get(lang_code, '')  # Ensure it's not empty
-
-# Add HTML and CSS
-if avatar_url:  # Only apply if the URL is valid
+if avatar_url:
     st.markdown(f"""
     <style>
     .avatar-bg {{
@@ -112,7 +109,6 @@ def generate_reply(messages, user_input, image_part=None):
         chat = model.start_chat(history=messages)
 
         if image_part:
-            # =====转换 image_part 为 Gemini API 需要的格式=======
             image_part_obj = Part.from_data(
                 data=image_part["data"],
                 mime_type=image_part["mime_type"]
@@ -124,21 +120,20 @@ def generate_reply(messages, user_input, image_part=None):
         return response
     except Exception as e:
         import traceback
-        st.error("⚠️ Gemini API The request failed. Please check the network or API Key configuration.")
+        st.error("⚠️ Gemini API request failed. Check your network or API Key.")
         st.text_area("Error details", traceback.format_exc(), height=200)
         return str(e)
 
-# ========== 上传与拍照（互斥选择） ==========
-image_part = None
-image = None
-mime_type, _ = mimetypes.guess_type(uploaded_image.name)
+# ========== 上传与拍照 ==========
 
+image = None
+image_part = None
+
+# 拍照
 st.markdown("### " + t["camera"])
 st.markdown(t["camera_sub"])
 st.caption(t["camera_note"])
-
-# ========== 控制相机是否显示 ============
-if st.button(t["camera_on"]):  
+if st.button(t["camera_on"]):
     camera_image = st.camera_input("")
     if camera_image:
         image = Image.open(camera_image)
@@ -148,30 +143,30 @@ if st.button(t["camera_on"]):
         }
 
 st.markdown("---")
+
+# 上传
 st.markdown("### " + t["upload"])
 uploaded_image = st.file_uploader(t["upload_note"], type=["jpg", "jpeg", "png"])
-
-# ========== 控制上传照片是否显示 ============
 if uploaded_image:
     image = Image.open(uploaded_image)
+    mime_type, _ = mimetypes.guess_type(uploaded_image.name)
     image_part = {
-        "mime_type": "image/jpeg",
+        "mime_type": mime_type or "image/jpeg",
         "data": uploaded_image.getvalue()
     }
 
 if image:
     st.image(image, caption="Selected Image", use_container_width=True)
 
-# ========== 用户输入与发送按钮 ==========
+# ========== 用户提问 ==========
 st.markdown("---")
 st.markdown("### " + t["user_role"])
 user_input = st.text_input(" ", placeholder=t["input_placeholder"], key="text_input")
-# =====添加发送按钮========
-if st.button(t["ask"]):  
+
+if st.button(t["ask"]):
     if user_input:
         messages = fetch_conversation_history()
         messages.append({"role": "user", "parts": user_input})
-
         with st.spinner("Processing..."):
             response = generate_reply(messages, user_input, image_part)
 
@@ -182,7 +177,7 @@ if st.button(t["ask"]):
             messages.append({"role": "model", "parts": bot_reply})
             st.session_state["messages"] = messages
 
-# ========== 对话内容展示 ==========
+# ========== 对话历史 ==========
 st.markdown("---")
 st.subheader("🗨️ Conversation History")
 
