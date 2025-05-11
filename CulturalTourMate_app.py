@@ -41,6 +41,7 @@ translations = {
 "oversize_error": "🚫 Image exceeds 3MB limit. Please upload a smaller image.",
 "no_camera": "⚠️ No camera available on this device.",
 "photo_success": "✅ Photo captured successfully.",
+"image_uploaded": "✅ image uploaded successfully.",
 "api_error":"⚠️ Gemini API request failed. Check your network or API Key.",
 "text_unsendable": "⚠️ You have to upload a picture before asking a question."
 },
@@ -66,6 +67,7 @@ translations = {
 "no_camera": "⚠️ 当前设备无可用摄像头。",
 "photo_success": "✅ 拍照成功。",
 "api_error":"⚠️ Gemini API 链接失败. 请检查你的API密钥.",
+"image_uploaded": "✅ 图片上传成功。",
 "text_unsendable": "⚠️ 发消息前请拍照或上传一张图片."
 }
 }
@@ -76,7 +78,7 @@ language = st.selectbox("🌐 Select Language EN/CN | 支持中英文", ["Englis
 lang_map = {"English": "en", "中文": "zh"}
 lang_code = lang_map[language]
 t = translations[lang_code]
-st.session_state["lang_code"]
+st.session_state["lang_code"] = lang_code
 
 #  =========== Avatar URL =========== 
 
@@ -176,43 +178,43 @@ def generate_reply(messages, user_input, image_part=None):
             response = chat.send_message([user_input,{"mime_type": image_part["mime_type"], "data": image_part["data"]} ])
         else:
             response = chat.send_message(user_input)
-            return response
-        except Exception as e:
-            import traceback
+        return response
+    except Exception as e:
+        import traceback
         st.error(t["api_error"])
         st.text_area("Error details", traceback.format_exc(), height=200)
-    return str(e)
+        return str(e)
 
-# 提问发送
+# ================= 提问发送 ================
 
 def submit_question():
-if not image_part:
-st.warning(t["text_unsendable"])
-return
+    if not image_part:
+        st.warning(t["text_unsendable"])
+        return
 
-user_text = st.session_state.get("text_input", "").strip()
-if user_text:
-    messages = st.session_state["messages"]
-    messages.append({"role": "user", "parts": user_text})
+    user_text = st.session_state.get("text_input", "").strip()
+    if user_text:
+        messages = st.session_state["messages"]
+        messages.append({"role": "user", "parts": user_text})
 
-    progress_text = t["progress"]
-    my_bar = st.progress(0, text=progress_text)
-    for percent_complete in range(1, 91):
-        time.sleep(0.02)
-        my_bar.progress(percent_complete, text=progress_text)
+        progress_text = t["progress"]
+        my_bar = st.progress(0, text=progress_text)
+        for percent_complete in range(1, 91):
+            time.sleep(0.02)
+            my_bar.progress(percent_complete, text=progress_text)
 
-    with st.spinner(t["response"]):
-        response = generate_reply(messages, user_text, image_part)
+        with st.spinner(t["response"]):
+            response = generate_reply(messages, user_text, image_part)
 
-    my_bar.progress(100, text="✅")
+        my_bar.progress(100, text="✅")
 
-    if isinstance(response, str):
-        st.error(response)
-    else:
-        bot_reply = response.candidates[0].content.parts[0].text
-        messages.append({"role": "model", "parts": bot_reply})
-        st.session_state["messages"] = messages
-    st.session_state["text_input"] = ""
+        if isinstance(response, str):
+            st.error(response)
+        else:
+            bot_reply = response.candidates[0].content.parts[0].text
+            messages.append({"role": "model", "parts": bot_reply})
+            st.session_state["messages"] = messages
+        st.session_state["text_input"] = ""
 
 
 col1, col2 = st.columns([5, 1])
