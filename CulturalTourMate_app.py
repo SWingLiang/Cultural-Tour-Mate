@@ -5,7 +5,7 @@ import os
 from PIL import Image
 
 # ========== 页面配置 ==========
-st.set_page_config(page_title="Culture-Tour-Mate", layout="centered")
+st.set_page_config(page_title="Cultural-Tour-Mate", layout="centered")
 
 # ========== 加载 API Key ==========
 dotenv.load_dotenv()
@@ -15,8 +15,8 @@ genai.configure(api_key=api_key)
 # ========== 多语言支持 ==========
 translations = {
     "en": {
-        "title": "Culture-Tour-Mate",
-        "slogan": "Your trustworthy, insightful, and articulate cultural companion.",
+        "title": "Cultural-Tour-Mate",
+        "slogan": "Your trustworthy, insightful, and articulate cultural companion in tour.",
         "upload": "🖼️ Upload Image",
         "camera": "📷 Capture Photo",
         "desc": "Describe what you want to learn about the image:",
@@ -115,7 +115,7 @@ image = None
 
 st.markdown("### " + t["upload"])
 #st.caption(t["upload_note"])file_uploader
-uploaded_image = st.caption(t["upload_note"], type=["jpg", "jpeg", "png"])
+uploaded_image = st.file_uploader(t["upload_note"], type=["jpg", "jpeg", "png"])
 
 st.markdown("---")
 st.markdown("### " + t["camera"])
