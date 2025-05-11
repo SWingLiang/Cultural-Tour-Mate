@@ -37,7 +37,8 @@ translations = {
 "input_placeholder": "Type your question here...",
 "user_role": "💬 Ask anything",
 "progress": "⏳ Please wait while I analyze your question and image...",
-"response": "🧠 Generating response...",
+"response_title": "Cultural Insight",
+"response_loading": "🧠 Generating response...",
 "oversize_error": "🚫 Image exceeds 3MB limit. Please upload a smaller image.",
 "no_camera": "⚠️ No camera available on this device.",
 "photo_success": "✅ Photo captured successfully.",
@@ -62,7 +63,8 @@ translations = {
 "input_placeholder": "请输入您的问题...",
 "user_role": "💬 请您提问",
 "progress": "⏳ 请稍后，正在分析您的图像与问题...",
-"response": "🧠 正在生成对话...",
+"response_title": "深挖文化元素",
+"response_loading": "🧠 正在生成对话...",
 "oversize_error": "🚫 图像大小超3MB限制，请重新选择。",
 "no_camera": "⚠️ 当前设备无可用摄像头。",
 "photo_success": "✅ 拍照成功。",
@@ -74,7 +76,7 @@ translations = {
 
 #  =========== 选择语言 =========== 
 
-language = st.selectbox("🌐 Select Language EN/CN | 支持中英文", ["English", "中文"])
+language = st.selectbox("🌐 Language / 语言", ["English", "中文"])
 lang_map = {"English": "en", "中文": "zh"}
 lang_code = lang_map[language]
 t = translations[lang_code]
@@ -203,7 +205,7 @@ def submit_question():
             time.sleep(0.02)
             my_bar.progress(percent_complete, text=progress_text)
 
-        with st.spinner(t["response"]):
+        with st.spinner(t["response_loading"]):
             response = generate_reply(messages, user_text, image_part)
 
         my_bar.progress(100, text="✅")
