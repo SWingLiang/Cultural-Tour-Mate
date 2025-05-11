@@ -126,9 +126,24 @@ st.markdown("### " + t["camera"])
 st.markdown(t["camera_sub"])
 st.caption(t["camera_note"])
 
-show_camera = st.button(t["camera_on"])
-if show_camera:
+if "camera_on" not in st.session_state:
+    st.session_state["camera_on"] = False
+
+if st.button(t["camera_on"]):
+    st.session_state["camera_on"] = True
+
+if st.session_state["camera_on"]:
     camera_image = st.camera_input("")
+
+    if camera_image:
+        if len(camera_image.getvalue()) > 3 * 1024 * 1024:
+            st.warning(t["oversize_error"])
+        else:
+            image = Image.open(camera_image)
+            compressed = compress_image(image)
+            st.image(image, caption=t["photo_success"], use_container_width=True)
+            image_part = {"mime_type": "image/jpeg", "data": compressed}
+
     if camera_image:
         if len(camera_image.getvalue()) > 3 * 1024 * 1024:
             st.warning(t["oversize_error"])
