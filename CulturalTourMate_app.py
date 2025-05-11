@@ -245,3 +245,8 @@ if "messages" in st.session_state:
                 f"<div style='text-align:left; padding: 8px 12px; background-color:#e3f2fd; border-radius:10px; margin-bottom:8px;'>{message['parts']}</div>",
                 unsafe_allow_html=True
             )
+if st.button("🔁 Reset Chat"):
+    st.session_state["messages"] = []
+    st.session_state["text_input"] = ""
+    st.session_state["image_part"] = None
+    st.rerun()
