@@ -38,7 +38,7 @@ translations = {
         "oversize_error": "🚫 Image exceeds 3MB limit. Please upload a smaller image.",
         "no_camera": "⚠️ No camera available on this device.",
         "photo_success": "✅ Photo captured successfully.",
-        "api_error":"⚠️ Gemini API request failed. Check your network or API Key.",
+        "api_error": "⚠️ Gemini API request failed. Check your network or API Key.",
         "text_unsendable": "⚠️ You have to upload a picture before asking a question."
     },
     "zh": {
@@ -62,7 +62,7 @@ translations = {
         "oversize_error": "🚫 图像大小超3MB限制，请重新选择。",
         "no_camera": "⚠️ 当前设备无可用摄像头。",
         "photo_success": "✅ 拍照成功。",
-        "api_error":"⚠️ Gemini API 链接失败. 请检查你的API密钥.",
+        "api_error": "⚠️ Gemini API 链接失败. 请检查你的API密钥.",
         "text_unsendable": "⚠️ 发消息前请拍照或上传一张图片."
     }
 }
@@ -73,14 +73,13 @@ lang_map = {"English": "en", "中文": "zh"}
 lang_code = lang_map[language]
 t = translations[lang_code]
 
-# Avatar URL
+# Avatar 设置
 avatar_urls = {
     "en": "https://static.vecteezy.com/system/resources/previews/055/495/027/non_2x/a-man-in-a-white-t-shirt-and-jeans-free-png.png",
     "zh": "https://static.vecteezy.com/system/resources/previews/013/167/583/original/portrait-of-a-smiling-asian-woman-cutout-file-png.png",
 }
 avatar_url = avatar_urls.get(lang_code, '')
 
-# Avatar 背景样式
 if avatar_url:
     st.markdown(f"""
     <style>
@@ -104,54 +103,33 @@ st.title(t["title"])
 st.markdown(t["slogan"])
 st.caption(t["developer"])
 
-# 会话历史
+# 初始化消息
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [
-        {"role": "user", "parts": "system prompt: You are CulturalTourMate..."}
-    ]
+    st.session_state["messages"] = []
 
-# 图像压缩
-
+# 图像压缩函数
 def compress_image(image, max_size=(800, 800), quality=80):
     image.thumbnail(max_size)
     buffer = BytesIO()
     image.save(buffer, format="JPEG", quality=quality)
     return buffer.getvalue()
 
-# 拍照上传
-image = None
+# 图像输入处理
 image_part = None
 
 st.markdown("### " + t["camera"])
 st.markdown(t["camera_sub"])
 st.caption(t["camera_note"])
 
-if "camera_on" not in st.session_state:
-    st.session_state["camera_on"] = False
-
-if st.button(t["camera_on"]):
-    st.session_state["camera_on"] = True
-
-if st.session_state["camera_on"]:
-    camera_image = st.camera_input("")
-
-    if camera_image:
-        if len(camera_image.getvalue()) > 3 * 1024 * 1024:
-            st.warning(t["oversize_error"])
-        else:
-            image = Image.open(camera_image)
-            compressed = compress_image(image)
-            st.image(image, caption=t["photo_success"], use_container_width=True)
-            image_part = {"mime_type": "image/jpeg", "data": compressed}
-
-    if camera_image:
-        if len(camera_image.getvalue()) > 3 * 1024 * 1024:
-            st.warning(t["oversize_error"])
-        else:
-            image = Image.open(camera_image)
-            compressed = compress_image(image)
-            st.image(image, caption=t["photo_success"], use_container_width=True)
-            image_part = {"mime_type": "image/jpeg", "data": compressed}
+camera_image = st.camera_input(t["camera_on"])
+if camera_image:
+    if len(camera_image.getvalue()) > 3 * 1024 * 1024:
+        st.warning(t["oversize_error"])
+    else:
+        image = Image.open(camera_image)
+        compressed = compress_image(image)
+        st.image(image, caption=t["photo_success"], use_container_width=True)
+        image_part = {"mime_type": "image/jpeg", "data": compressed}
 
 st.markdown("---")
 st.markdown("### " + t["upload"])
@@ -168,19 +146,13 @@ if uploaded_image:
         mime_type, _ = mimetypes.guess_type(uploaded_image.name)
         image_part = {"mime_type": mime_type or "image/jpeg", "data": compressed}
 
-# 提问函数
-
+# 回复函数
 def generate_reply(messages, user_input, image_part=None):
     try:
         model = genai.GenerativeModel("gemini-pro-vision")
         chat = model.start_chat(history=messages)
-        if image_part:
-            response = chat.send_message([
-                user_input,
-                {"mime_type": image_part["mime_type"], "data": image_part["data"]}
-            ])
-        else:
-            response = chat.send_message(user_input)
+        input_payload = [{"mime_type": image_part["mime_type"], "data": image_part["data"]}, user_input] if image_part else user_input
+        response = chat.send_message(input_payload)
         return response
     except Exception as e:
         import traceback
@@ -188,60 +160,48 @@ def generate_reply(messages, user_input, image_part=None):
         st.text_area("Error details", traceback.format_exc(), height=200)
         return str(e)
 
-# 提问发送
-
+# 提问提交
 def submit_question():
+    user_text = st.session_state.get("text_input", "").strip()
+    if not user_text:
+        return
     if not image_part:
         st.warning(t["text_unsendable"])
         return
 
-    user_text = st.session_state.get("text_input", "").strip()
-    if user_text:
-        messages = st.session_state["messages"]
-        messages.append({"role": "user", "parts": user_text})
+    st.session_state["messages"].append({"role": "user", "parts": user_text})
 
-        progress_text = t["progress"]
-        my_bar = st.progress(0, text=progress_text)
-        for percent_complete in range(1, 91):
-            time.sleep(0.02)
-            my_bar.progress(percent_complete, text=progress_text)
+    my_bar = st.progress(0, text=t["progress"])
+    for i in range(1, 91):
+        time.sleep(0.01)
+        my_bar.progress(i, text=t["progress"])
 
-        with st.spinner(t["response"]):
-            response = generate_reply(messages, user_text, image_part)
+    with st.spinner(t["response"]):
+        reply = generate_reply(st.session_state["messages"], user_text, image_part)
 
-        my_bar.progress(100, text="✅")
+    my_bar.progress(100, text="✅")
 
-        if isinstance(response, str):
-            st.error(response)
-        else:
-            bot_reply = response.candidates[0].content.parts[0].text
-            messages.append({"role": "model", "parts": bot_reply})
-            st.session_state["messages"] = messages
-        st.session_state["text_input"] = ""
+    if isinstance(reply, str):
+        st.error(reply)
+    else:
+        answer = reply.candidates[0].content.parts[0].text
+        st.session_state["messages"].append({"role": "model", "parts": answer})
 
+    st.session_state["text_input"] = ""
+
+# 提问输入框
 col1, col2 = st.columns([5, 1])
-
 with col1:
     st.text_input(t["desc"], placeholder=t["input_placeholder"], key="text_input", on_change=submit_question)
-
 with col2:
     st.markdown("<div style='height: 2em;'></div>", unsafe_allow_html=True)
     st.button(t["send"], on_click=submit_question)
 
+# 聊天记录显示
 st.markdown("---")
 st.subheader("💬 Conversation History")
-
-if "messages" in st.session_state:
-    for message in st.session_state["messages"]:
-        if "system prompt" in message["parts"]:
-            continue
-        if message["role"] == "user":
-            st.markdown(
-                f"<div style='text-align:right; padding: 8px 12px; background-color:#f5f5f5; border-radius:10px; margin-bottom:8px;'>{message['parts']}</div>",
-                unsafe_allow_html=True
-            )
-        elif message["role"] == "model":
-            st.markdown(
-                f"<div style='display:flex; align-items:center; margin-bottom:8px;'><img src='{avatar_urls[lang_code]}' width='40' style='margin-right:10px;'><div style='background-color:#f7f7f7; padding: 8px 12px; border-radius:10px;'>{message['parts']}</div></div>",
-                unsafe_allow_html=True
-            )
+for msg in st.session_state["messages"]:
+    if msg["role"] == "user":
+        st.markdown(f"<div style='text-align:right;background-color:#e6f7ff;padding:10px;border-radius:8px;margin-bottom:8px;'>{msg['parts']}</div>", unsafe_allow_html=True)
+    elif msg["role"] == "model":
+        st.markdown(f"<div style='text-align:left;background-color:#f9f9f9;padding:10px;border-radius:8px;margin-bottom:8px;'>{msg['parts']}</div>", unsafe_allow_html=True)
