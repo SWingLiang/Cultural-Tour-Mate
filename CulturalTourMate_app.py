@@ -176,7 +176,7 @@ st.markdown("---")
 st.markdown("### " + t["upload"])
 st.markdown(t["upload_note"])
 
-uploaded_image = st.file_uploader(t[" "], type=["jpg", "jpeg", "png"])
+uploaded_image = st.file_uploader(" ", type=["jpg", "jpeg", "png"])
 if uploaded_image:
     if uploaded_image.size > 3 * 1024 * 1024:
         st.warning(t["oversize_error"])
