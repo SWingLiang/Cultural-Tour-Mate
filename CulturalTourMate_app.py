@@ -210,12 +210,15 @@ def submit_question():
             st.session_state["messages"] = messages
         st.session_state["text_input"] = ""
 
-# 同行布局：文本框 + 发送按钮
-input_col, button_col = st.columns([0.8, 0.2])
-with input_col:
+# ==========同行布局：文本框 + 发送按钮==========
+col1, col2 = st.columns([5, 1])  # 比例可根据需要调整，5:1 表示文本框较宽
+
+with col1:
     st.text_input(label="", placeholder=t["input_placeholder"], key="text_input")
-with button_col:
-    st.button(t["ask"], on_click=submit_question)
+
+with col2:
+    st.write("")  # 用于对齐按钮垂直位置
+    st.button(t["send_button"], on_click=submit_question)
 
 # ========== 对话历史 ==========
 st.markdown("---")
