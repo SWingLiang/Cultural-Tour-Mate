@@ -33,9 +33,12 @@ translations = {
         "camera_note": "Due to limitations, rear camera might not be accessible on tablets. Try phone or upload a photo.",
         "input_placeholder": "Type your question here...",
         "user_role": "💬 Ask anything",
+        "progress": "⏳ Please wait while I analyze your question and image...",
+        "response": "🧠 Generating response...",
         "oversize_error": "🚫 Image exceeds 3MB limit. Please upload a smaller image.",
         "no_camera": "⚠️ No camera available on this device.",
         "photo_success": "✅ Photo captured successfully.",
+        "api_error":"⚠️ Gemini API request failed. Check your network or API Key.",
         "text_unsendable": "⚠️ You have to upload a picture before asking a question."
     },
     "zh": {
@@ -54,9 +57,12 @@ translations = {
         "camera_note": "由于技术限制，部分平板不支持后置摄像头，建议使用手机或上传照片。",
         "input_placeholder": "请输入您的问题...",
         "user_role": "💬 请您提问",
+        "progress": "⏳ 请稍后，正在分析您的图像与问题...",
+        "response": "🧠 正在生成对话...",
         "oversize_error": "🚫 图像大小超3MB限制，请重新选择。",
         "no_camera": "⚠️ 当前设备无可用摄像头。",
         "photo_success": "✅ 拍照成功。",
+        "api_error":"⚠️ Gemini API 链接失败. 请检查你的API密钥.",
         "text_unsendable": "⚠️ 发消息前请拍照或上传一张图片."
     }
 }
@@ -163,7 +169,7 @@ def generate_reply(messages, user_input, image_part=None):
         return response
     except Exception as e:
         import traceback
-        st.error("\u26a0\ufe0f Gemini API request failed. Check your network or API Key.")
+        st.error(t["api_error"])
         st.text_area("Error details", traceback.format_exc(), height=200)
         return str(e)
 
@@ -171,7 +177,7 @@ def generate_reply(messages, user_input, image_part=None):
 
 def submit_question():
     if not image_part:
-        st.warning(["text_unsendable"])
+        st.warning(t["text_unsendable"])
         return
 
     user_text = st.session_state.get("text_input", "").strip()
@@ -179,16 +185,16 @@ def submit_question():
         messages = st.session_state["messages"]
         messages.append({"role": "user", "parts": user_text})
 
-        progress_text = "⏳ Please wait while I analyze your question and image..."
+        progress_text = t["progress"]
         my_bar = st.progress(0, text=progress_text)
         for percent_complete in range(1, 91):
             time.sleep(0.02)
             my_bar.progress(percent_complete, text=progress_text)
 
-        with st.spinner("🧠 Generating response..."):
+        with st.spinner(t["respose"]):
             response = generate_reply(messages, user_text, image_part)
 
-        my_bar.progress(100, text="✅ Done!")
+        my_bar.progress(100, text="✅")
 
         if isinstance(response, str):
             st.error(response)
