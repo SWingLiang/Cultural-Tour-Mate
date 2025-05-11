@@ -25,14 +25,14 @@ translations = {
         "camera_on": "📸 Take a shot",
         "camera_sub": "Any cultural troubles during the tour, please take a photo and ask me.",
         "desc": "Describe what you want to learn about the image:",
-        "ask": "Send🦄",
+        "ask": "🦄 Send",
         "response": "Cultural Insight",
         "feedback": "Was this helpful? Feel free to ask more.",
         "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
         "upload_note": "Select and upload an image from your device, the image is limited to 2 MB.",
         "camera_note": "Due to limitations, rear camera might not be accessible on tablets. Try phone or upload a photo.",
         "input_placeholder": "Type your question here...",
-        "user_role": "💬Ask anything",
+        "user_role": "💬 Ask anything",
         "oversize_error": "🚫 Image exceeds 3MB limit. Please upload a smaller image.",
         "no_camera": "⚠️ No camera available on this device.",
         "photo_success": "✅ Photo captured successfully."
@@ -45,14 +45,14 @@ translations = {
         "camera_on": "📸 打开相机",
         "camera_sub": "旅途中的文化困扰，请随手拍一张照片问问我。",
         "desc": "描述您想了解的图像内容：",
-        "ask": "发送🦄",
+        "ask": "🦄 发送",
         "response": "文化背景信息",
         "feedback": "这个回答有帮助吗？欢迎继续提问。",
         "developer": "开发者：梁羡荣(Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh",
         "upload_note": "从您的设备中选择并上传一张图片，大小不超过2M。",
         "camera_note": "由于技术限制，部分平板不支持后置摄像头，建议使用手机或上传照片。",
         "input_placeholder": "请输入您的问题...",
-        "user_role": "💬请您提问",
+        "user_role": "💬 请您提问",
         "oversize_error": "🚫 图像大小超过3MB限制，请重新选择。",
         "no_camera": "⚠️ 当前设备无可用摄像头。",
         "photo_success": "✅ 拍照成功。"
@@ -142,17 +142,19 @@ def generate_reply(messages, user_input, image_part=None):
         st.text_area("Error details", traceback.format_exc(), height=200)
         return str(e)
 
-# ========== 图片压缩函数 ==========
-def compress_image(image, max_size=(1000, 1000), quality=80):
-    image.thumbnail(max_size)
-    buffer = BytesIO()
-    image.save(buffer, format="JPEG", quality=quality)
-    return buffer.getvalue()
+
 
 # ========== 拍照与上传 ==========
 image = None
 image_part = None
 
+# ========== 图片压缩函数 ==========
+def compress_image(image, max_size=(800, 800), quality=80):
+    image.thumbnail(max_size)
+    buffer = BytesIO()
+    image.save(buffer, format="JPEG", quality=quality)
+    return buffer.getvalue()
+    
 st.markdown("### " + t["camera"])
 st.markdown(t["camera_sub"])
 st.caption(t["camera_note"])
@@ -230,11 +232,11 @@ if "messages" in st.session_state:
             continue
         if message["role"] == "user":
             st.markdown(
-                f"<div style='text-align:right; padding: 8px 12px; background-color:#e6f7ff; border-radius:10px; margin-bottom:8px;'>{message['parts']}</div>",
+                f"<div style='text-align:right; padding: 8px 12px; background-color:#f5f5f5; border-radius:10px; margin-bottom:8px;'>{message['parts']}</div>",
                 unsafe_allow_html=True
             )
         elif message["role"] == "model":
             st.markdown(
-                f"<div style='display:flex; align-items:center; margin-bottom:8px;'><img src='{avatar_urls[lang_code]}' width='40' style='margin-right:10px;'><div style='background-color:#f5f5f5; padding:8px 12px; border-radius:10px;'>{message['parts']}</div></div>",
+                f"<div style='display:flex; align-items:center; margin-bottom:8px;'><img src='{avatar_urls[lang_code]}' width='40' style='margin-right:10px;'><div style='background-color:#f7f7f7; padding:8px 12px; border-radius:10px;'>{message['parts']}</div></div>",
                 unsafe_allow_html=True
             )
