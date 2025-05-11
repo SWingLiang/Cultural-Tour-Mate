@@ -230,16 +230,16 @@ st.markdown("---")
 st.subheader("💬 Conversation History")
 
 if "messages" in st.session_state:
-for message in st.session_state["messages"]:
-if "system prompt" in message["parts"]:
-continue
-if message["role"] == "user":
-st.markdown(
-f"<div style='text-align:right; padding: 8px 12px; background-color:#f5f5f5; border-radius:10px; margin-bottom:8px;'>{message['parts']}</div>",
-unsafe_allow_html=True
-)
-elif message["role"] == "model":
-st.markdown(
-f"<div style='display:flex; align-items:center; margin-bottom:8px;'><img src='{avatar_urls[lang_code]}' width='40' style='margin-right:10px;'><div style='background-color:#f7f7f7; padding: 8px 12px; border-radius:10px;'>{message['parts']}</div></div>",
-unsafe_allow_html=True
-)
+    for message in st.session_state["messages"]:
+        if "system prompt" in message["parts"]:
+            continue
+        if message["role"] == "user":
+            st.markdown(
+                f"<div style='text-align:right; padding: 8px 12px; background-color:#f5f5f5; border-radius:10px; margin-bottom:8px;'>{message['parts']}</div>",
+                unsafe_allow_html=True
+            )
+        elif message["role"] == "model":
+            st.markdown(
+                f"<div style='text-align:left; padding: 8px 12px; background-color:#e3f2fd; border-radius:10px; margin-bottom:8px;'>{message['parts']}</div>",
+                unsafe_allow_html=True
+            )
