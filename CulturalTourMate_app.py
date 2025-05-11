@@ -68,7 +68,7 @@ if avatar_url:  # Only apply if the URL is valid
         position: fixed;
         bottom: 20px;
         right: 20px;
-        height: 30vh;
+        height: 38.2vh;
         opacity: 0.5;
         z-index: 0;
     }}
@@ -114,13 +114,14 @@ image_part = None
 image = None
 
 st.markdown("### " + t["upload"])
-st.caption(t["upload_note"])
-uploaded_image = st.file_uploader(type=["jpg", "jpeg", "png"])
+#st.caption(t["upload_note"])file_uploader
+uploaded_image = st.caption(t["upload_note"], type=["jpg", "jpeg", "png"])
 
 st.markdown("---")
 st.markdown("### " + t["camera"])
 st.caption(t["camera_note"])
-if st.button(t["camera"]):  # 控制相机是否显示
+# ========== 控制相机是否显示 ============
+if st.button(t["camera"]):  
     camera_image = st.camera_input("")
     if camera_image:
         image = Image.open(camera_image)
