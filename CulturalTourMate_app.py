@@ -89,19 +89,7 @@ if avatar_url:
             display: none;
         }}
     }}
-    .stFileUploader label {{
-        display: none !important;
-    }}
-    .stFileUploader button {{
-        background-color: #f0f0f0 !important;
-        font-size: 20px !important;
-        border-radius: 50% !important;
-        width: 48px !important;
-        height: 48px !important;
-        padding: 0 !important;
-    }}
-    </style>
-    <img class="avatar-bg" src="{avatar_url}" />
+    </style><img class="avatar-bg" src="{avatar_url}" />
     """, unsafe_allow_html=True)
 
 # ========== 标题与说明 ==========
@@ -155,22 +143,26 @@ def compress_image(image, max_size=(800, 800), quality=80):
     image.save(buffer, format="JPEG", quality=quality)
     return buffer.getvalue()
     
+# 摄像头功能按钮控制
 st.markdown("### " + t["camera"])
 st.markdown(t["camera_sub"])
 st.caption(t["camera_note"])
 
-camera_image = st.camera_input("")
-if camera_image:
-    if len(camera_image.getvalue()) > 3 * 1024 * 1024:
-        st.warning(t["oversize_error"])
-    else:
-        image = Image.open(camera_image)
-        compressed = compress_image(image)
-        st.image(image, caption=t["photo_success"], use_container_width=True)
-        image_part = {
-            "mime_type": "image/jpeg",
-            "data": compressed
-        }
+show_camera = st.button(t["camera_on"])
+if show_camera:
+    camera_image = st.camera_input("")
+    if camera_image:
+        if len(camera_image.getvalue()) > 3 * 1024 * 1024:
+            st.warning(t["oversize_error"])
+        else:
+            image = Image.open(camera_image)
+            compressed = compress_image(image)
+            st.image(image, caption=t["photo_success"], use_container_width=True)
+            image_part = {
+                "mime_type": "image/jpeg",
+                "data": compressed
+            }
+
 
 st.markdown("---")
 st.markdown("### " + t["upload"])
@@ -195,7 +187,7 @@ st.markdown("---")
 st.markdown("### " + t["user_role"])
 
 def submit_question():
-    if st.session_state["text_input"]:
+    if st.session_state.get("text_input", "").strip():
         messages = fetch_conversation_history()
         messages.append({"role": "user", "parts": st.session_state["text_input"]})
 
@@ -218,10 +210,12 @@ def submit_question():
             st.session_state["messages"] = messages
         st.session_state["text_input"] = ""
 
-st.text_input(" ", placeholder=t["input_placeholder"], key="text_input", on_change=submit_question)
-
-if st.button(t["ask"]):
-    submit_question()
+# 同行布局：文本框 + 发送按钮
+input_col, button_col = st.columns([0.8, 0.2])
+with input_col:
+    st.text_input(" ", placeholder=t["input_placeholder"], key="text_input")
+with button_col:
+    st.button(t["ask"], on_click=submit_question)
 
 # ========== 对话历史 ==========
 st.markdown("---")
