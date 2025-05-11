@@ -4,7 +4,6 @@ import dotenv
 import os
 import mimetypes
 from PIL import Image
-from google.generativeai.types.content_types import Part
 
 # ========== 页面配置 ==========
 st.set_page_config(page_title="Cultural-Tour-Mate", layout="centered")
