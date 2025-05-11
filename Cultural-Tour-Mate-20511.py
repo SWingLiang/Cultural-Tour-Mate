@@ -35,7 +35,7 @@ translations = {
         "user_role": "💬 Ask anything",
         "oversize_error": "🚫 Image exceeds 3MB limit. Please upload a smaller image.",
         "no_camera": "⚠️ No camera available on this device.",
-        "warning_image_and_question": "Please provide both an image and a question.",
+        "warning_image_and_question": "❗Please provide both an image and a question.",
         "photo_success": "✅ Photo captured successfully."
     },
     "zh": {
@@ -56,7 +56,7 @@ translations = {
         "user_role": "💬 请您提问",
         "oversize_error": "🚫 图像大小超过3MB限制，请重新选择。",
         "no_camera": "⚠️ 当前设备无可用摄像头。",
-        "warning_image_and_question": "请同时提供图片和问题。",
+        "warning_image_and_question": "❗请同时提供图片和问题描述。",
         "photo_success": "✅ 拍照成功。"
     }
 }
@@ -97,24 +97,24 @@ st.title(t["title"])
 st.markdown(t["slogan"])
 st.caption(t["developer"])
 
-# 会话历史
+# ===============会话历史==============
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
         {"role": "user", "parts": "system prompt: You are CulturalTourMate, a helpful and culturally knowledgeable travel assistant..."}
     ]
 
-# 图像压缩处理
+# ==============图像压缩处理==============
 def compress_image(image, max_size=(800, 800), quality=80):
     image.thumbnail(max_size)
     buffer = BytesIO()
     image.save(buffer, format="JPEG", quality=quality)
     return buffer.getvalue()
 
-# 上传图像 & 拍照
+# ================上传图像 & 拍照=================
 image = None
 image_part = None
 
-# ========== 摄像头拍照处理 ==========
+# ========== 摄像头拍照处理 ===========
 st.markdown("### " + t["camera"])
 st.markdown(t["camera_sub"])
 st.caption(t["camera_note"])
@@ -122,29 +122,21 @@ st.caption(t["camera_note"])
 # 使用 session_state 检测是否已有照片
 camera_image = st.camera_input(t["camera_on"])
 
+if st.button(t["camera_on"]):
+st.session_state["show_camera"] = True
+
+if st.session_state.get("show_camera", False):
+camera_image = st.camera_input(t["camera_on"])
 if camera_image is not None:
-    if len(camera_image.getvalue()) > 3 * 1024 * 1024:
-        st.warning(t["oversize_error"])
-    else:
-        image = Image.open(camera_image)
-        compressed = compress_image(image)
-        st.image(image, caption=t["photo_success"], use_container_width=True)
-        image_part = {"mime_type": "image/jpeg", "data": compressed}
+if len(camera_image.getvalue()) > 3 * 1024 * 1024:
+st.warning(t["oversize_error"])
+else:
+image = Image.open(camera_image)
+compressed = compress_image(image)
+st.success(t["photo_success"])
+image_part = {"mime_type": "image/jpeg", "data": compressed}
 
-st.markdown("---")
-st.markdown("### " + t["upload"])
-st.markdown(t["upload_note"])
-
-uploaded_image = st.file_uploader(label="", type=["jpg", "jpeg", "png"])
-if uploaded_image:
-    if uploaded_image.size > 3 * 1024 * 1024:
-        st.warning(t["oversize_error"])
-    else:
-        image = Image.open(uploaded_image)
-        compressed = compress_image(image)
-        st.image(image, caption="✅ Uploaded successfully", use_container_width=True)
-        image_part = {"mime_type": "image/jpeg", "data": compressed}
-
+# ================ 上传图像  ==================
 st.markdown("---")
 st.markdown("### " + t["upload"])
 st.markdown(t["upload_note"])
@@ -176,5 +168,5 @@ if st.button(t["send"]):
             st.markdown(response.text)
             st.info(t["feedback"])
     else:
-        st.warning("❗ " + t["warning_image_and_question"])
+        st.warning(t["warning_image_and_question"])
 
