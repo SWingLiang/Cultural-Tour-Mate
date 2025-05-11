@@ -5,7 +5,7 @@ import os
 from PIL import Image
 
 # ========== 页面配置 ==========
-st.set_page_config(page_title="Cultural-Tour-Mate", layout="centered")
+st.set_page_config(page_title="🏛️Cultural-Tour-Mate🧧", layout="centered")
 
 # ========== 加载 API Key ==========
 dotenv.load_dotenv()
@@ -20,14 +20,14 @@ translations = {
         "upload": "🖼️ Upload Image",
         "camera": "📷 Capture Photo",
         "camera_on": "📸 Take a shot",
-        "camera_sub": "Cultural troubles during the tour, please take a photo and ask me anything",
+        "camera_sub": "Any ultural troubles during the tour, please take a photo and ask me.",
         "desc": "Describe what you want to learn about the image:",
         "ask": "Send",
         "response": "Cultural Insight",
         "feedback": "Was this helpful? Feel free to ask more.",
         "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
         "upload_note": "Select and upload an image from your device, image is limited 200M.",
-        "camera_note": "Due to technical limitations, only the front camera is supported. Suggest upload photos",
+        "camera_note": "Due to technical limitations, only the front camera is supported. Suggest upload photos.",
         "input_placeholder": "Type your question here..."
     },
     "zh": {
@@ -36,12 +36,12 @@ translations = {
         "upload": "🖼️ 上传图像",
         "camera": "📷 现场拍照",
         "camera_on": "📸 打开相机",
-        "camera_sub": "旅途中的文化困扰，请随手拍一张照片问问我",
+        "camera_sub": "旅途中的文化困扰，请随手拍一张照片问问我。",
         "desc": "描述您想了解的图像内容：",
         "ask": "发送",
         "response": "文化背景信息",
         "feedback": "这个回答有帮助吗？欢迎继续提问。",
-        "developer": "开发者：梁羡荣(Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
+        "developer": "开发者：梁羡荣(Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh",
         "upload_note": "从您的设备中选择并上传一张图片，大小不超过200M。",
         "camera_note": "由于技术限制，目前仅支持前置摄像头，建议上传照片。",
         "input_placeholder": "请输入您的问题..."
@@ -118,13 +118,8 @@ image_part = None
 image = None
 
 st.markdown("### " + t["camera"])
-st.caption(t["camera_sub"])
+st.markdown(t["camera_sub"])
 st.caption(t["camera_note"])
-st.markdown("---")
-st.markdown("### " + t["upload"])
-#st.caption(t["upload_note"])file_uploader
-uploaded_image = st.file_uploader(t["upload_note"], type=["jpg", "jpeg", "png"])
-
 
 # ========== 控制相机是否显示 ============
 if st.button(t["camera_on"]):  
@@ -136,6 +131,11 @@ if st.button(t["camera_on"]):
             "data": camera_image.getvalue()
         }
 
+st.markdown("---")
+st.markdown("### " + t["upload"])
+uploaded_image = st.file_uploader(t["upload_note"], type=["jpg", "jpeg", "png"])
+
+# ========== 控制上传照片是否显示 ============
 if uploaded_image:
     image = Image.open(uploaded_image)
     image_part = {
