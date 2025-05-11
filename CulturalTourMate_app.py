@@ -150,7 +150,7 @@ if image:
 
 # ========== 用户输入与发送按钮 ==========
 st.markdown("---")
-user_input = st.text_input("### " +t["user_role"], placeholder=t["input_placeholder"], key="text_input")
+user_input = st.text_input("### " + t["user_role"], placeholder=t["input_placeholder"], key="text_input")
 
 if st.button(t["ask"]):  # =====添加发送按钮========
     if user_input:
