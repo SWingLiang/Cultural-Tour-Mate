@@ -29,7 +29,7 @@ translations = {
         "upload_note": "Select and upload an image from your device, the image is limited to 200 MB.",
         "camera_note": "Due to technical limitations, only the front camera is supported. Suggest upload photos.",
         "input_placeholder": "Type your question here...",
-        "user_role": "💬Ask"
+        "user_role": "### " + "💬Ask"
     },
     "zh": {
         "title": "🏛️AI文化旅伴",
