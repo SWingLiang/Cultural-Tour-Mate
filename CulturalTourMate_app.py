@@ -7,7 +7,6 @@ import time
 from PIL import Image
 from io import BytesIO
 
-
 # ========== 页面配置 ==========
 st.set_page_config(page_title="Cultural-Tour-Mate", layout="centered")
 
@@ -30,10 +29,13 @@ translations = {
         "response": "Cultural Insight",
         "feedback": "Was this helpful? Feel free to ask more.",
         "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
-        "upload_note": "Select and upload an image from your device, the image is limited to 200 MB.",
-        "camera_note": "Due to technical limitations, only the front camera is supported. Suggest upload photos.",
+        "upload_note": "Select and upload an image from your device, the image is limited to 2 MB.",
+        "camera_note": "Due to limitations, rear camera might not be accessible on tablets. Try phone or upload a photo.",
         "input_placeholder": "Type your question here...",
-        "user_role": "💬Ask"
+        "user_role": "💬Ask anything",
+        "oversize_error": "🚫 Image exceeds 3MB limit. Please upload a smaller image.",
+        "no_camera": "⚠️ No camera available on this device.",
+        "photo_success": "✅ Photo captured successfully."
     },
     "zh": {
         "title": "🏛️AI文化旅伴",
@@ -47,10 +49,13 @@ translations = {
         "response": "文化背景信息",
         "feedback": "这个回答有帮助吗？欢迎继续提问。",
         "developer": "开发者：梁羡荣(Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh",
-        "upload_note": "从您的设备中选择并上传一张图片，大小不超过200M。",
-        "camera_note": "由于技术限制，目前仅支持前置摄像头，建议上传照片。",
+        "upload_note": "从您的设备中选择并上传一张图片，大小不超过2M。",
+        "camera_note": "由于技术限制，部分平板不支持后置摄像头，建议使用手机或上传照片。",
         "input_placeholder": "请输入您的问题...",
-        "user_role": "💬请问"
+        "user_role": "💬请您提问",
+        "oversize_error": "🚫 图像大小超过3MB限制，请重新选择。",
+        "no_camera": "⚠️ 当前设备无可用摄像头。",
+        "photo_success": "✅ 拍照成功。"
     }
 }
 
@@ -84,6 +89,17 @@ if avatar_url:
             display: none;
         }}
     }}
+    .stFileUploader label {{
+        display: none !important;
+    }}
+    .stFileUploader button {{
+        background-color: #f0f0f0 !important;
+        font-size: 20px !important;
+        border-radius: 50% !important;
+        width: 48px !important;
+        height: 48px !important;
+        padding: 0 !important;
+    }}
     </style>
     <img class="avatar-bg" src="{avatar_url}" />
     """, unsafe_allow_html=True)
@@ -93,23 +109,22 @@ st.title(t["title"])
 st.markdown(t["slogan"])
 st.caption(t["developer"])
 
-# ========== 初始化会话 ==========
+# ========== 会话初始化 ==========
 def fetch_conversation_history():
     if "messages" not in st.session_state:
         st.session_state["messages"] = [
             {
                 "role": "user",
-                "parts": "system prompt: You are CulturalTourMate，a trustworthy, insightful, and articulate cultural companion. When a tourist uploads or captures an image of a landmark, artifact, or artwork, you provide engaging, accurate, and culturally rich information to deepen their understanding. You explain historical context, symbolism, artistic style, and local significance in a concise yet refined way. Your tone is friendly, professional, and easy to understand, empowering travelers to connect meaningfully with the cultures they encounter."
+                "parts": "system prompt: You are CulturalTourMate..."
             }
         ]
     return st.session_state["messages"]
-    
+
 # ========== Gemini 回复 ==========
 def generate_reply(messages, user_input, image_part=None):
     try:
         model = genai.GenerativeModel("gemini-pro-vision")
         chat = model.start_chat(history=messages)
-
         if image_part:
             response = chat.send_message([
                 user_input,
@@ -120,68 +135,69 @@ def generate_reply(messages, user_input, image_part=None):
             ])
         else:
             response = chat.send_message(user_input)
-
         return response
     except Exception as e:
         import traceback
         st.error("⚠️ Gemini API request failed. Check your network or API Key.")
         st.text_area("Error details", traceback.format_exc(), height=200)
         return str(e)
-        
-# ========== 上传与拍照 ==========
 
+# ========== 图片压缩函数 ==========
+def compress_image(image, max_size=(1000, 1000), quality=80):
+    image.thumbnail(max_size)
+    buffer = BytesIO()
+    image.save(buffer, format="JPEG", quality=quality)
+    return buffer.getvalue()
+
+# ========== 拍照与上传 ==========
 image = None
 image_part = None
 
-def compress_image(image, max_size=(1024, 1024)):
-    image.thumbnail(max_size)
-    return image
-    
-# 拍照
 st.markdown("### " + t["camera"])
 st.markdown(t["camera_sub"])
 st.caption(t["camera_note"])
-if st.button(t["camera_on"]):
-    camera_image = st.camera_input("")
-    if camera_image:
+
+camera_image = st.camera_input("")
+if camera_image:
+    if len(camera_image.getvalue()) > 3 * 1024 * 1024:
+        st.warning(t["oversize_error"])
+    else:
         image = Image.open(camera_image)
-        image = compress_image(image)  # 自动压缩
+        compressed = compress_image(image)
+        st.image(image, caption=t["photo_success"], use_container_width=True)
         image_part = {
             "mime_type": "image/jpeg",
-            "data": camera_image.getvalue()
+            "data": compressed
         }
 
 st.markdown("---")
-
-# 上传
 st.markdown("### " + t["upload"])
+
 uploaded_image = st.file_uploader(t["upload_note"], type=["jpg", "jpeg", "png"])
 if uploaded_image:
-    image = Image.open(uploaded_image)
-    mime_type, _ = mimetypes.guess_type(uploaded_image.name)
-    image_part = {
-        "mime_type": mime_type or "image/jpeg",
-        "data": uploaded_image.getvalue()
-    }
-
-if image:
-    st.image(image, caption="Selected Image", use_container_width=True)
-
+    if uploaded_image.size > 3 * 1024 * 1024:
+        st.warning(t["oversize_error"])
+    else:
+        image = Image.open(uploaded_image)
+        compressed = compress_image(image)
+        st.image(image, caption="Selected Image", use_container_width=True)
+        mime_type, _ = mimetypes.guess_type(uploaded_image.name)
+        image_part = {
+            "mime_type": mime_type or "image/jpeg",
+            "data": compressed
+        }
 
 # ========== 用户提问 ==========
 st.markdown("---")
 st.markdown("### " + t["user_role"])
 
-# 提交函数
 def submit_question():
     if st.session_state["text_input"]:
         messages = fetch_conversation_history()
         messages.append({"role": "user", "parts": st.session_state["text_input"]})
 
-        # 模拟加载进度条
         progress_text = "⏳ Please wait while I analyze your question and image..."
         my_bar = st.progress(0, text=progress_text)
-
         for percent_complete in range(1, 91):
             time.sleep(0.02)
             my_bar.progress(percent_complete, text=progress_text)
@@ -197,17 +213,10 @@ def submit_question():
             bot_reply = response.candidates[0].content.parts[0].text
             messages.append({"role": "model", "parts": bot_reply})
             st.session_state["messages"] = messages
-        st.session_state["text_input"] = ""  # 清空输入框
+        st.session_state["text_input"] = ""
 
-# 输入框，绑定 on_change 事件
-st.text_input(
-    " ",
-    placeholder=t["input_placeholder"],
-    key="text_input",
-    on_change=submit_question
-)
+st.text_input(" ", placeholder=t["input_placeholder"], key="text_input", on_change=submit_question)
 
-# 如果用户点击按钮，也触发提交函数
 if st.button(t["ask"]):
     submit_question()
 
