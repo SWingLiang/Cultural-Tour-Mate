@@ -35,8 +35,9 @@ translations = {
         "user_role": "💬 Ask anything",
         "oversize_error": "🚫 Image exceeds 3MB limit. Please upload a smaller image.",
         "no_camera": "⚠️ No camera available on this device.",
+        "photo_uploaded": "✅ Photo uploaded successfully.",
         "warning_image_and_question": "❗Please provide both an image and a question.",
-        "photo_success": "✅ Photo captured successfully."
+        "photo_captured": "✅ Photo captured successfully."
     },
     "zh": {
         "title": "🏛️AI文化旅伴",
@@ -57,7 +58,8 @@ translations = {
         "oversize_error": "🚫 图像大小超过3MB限制，请重新选择。",
         "no_camera": "⚠️ 当前设备无可用摄像头。",
         "warning_image_and_question": "❗请同时提供图片和问题描述。",
-        "photo_success": "✅ 拍照成功。"
+        "photo_uploaded": "✅ 照片上传成功！",
+        "photo_captured": "✅ 照片拍摄成功！"
     }
 }
 
@@ -133,7 +135,7 @@ if st.session_state["show_camera"]:
             image = Image.open(camera_image)
             compressed = compress_image(image)
             image_part = {"mime_type": "image/jpeg", "data": compressed}
-            st.image(image, caption=t["photo_success"], use_container_width=True)
+            st.image(image, caption=t["photo_captured"], use_container_width=True)
 
 # ================ 上传图像  ==================
 st.markdown("---")
@@ -147,7 +149,7 @@ if uploaded_image:
     else:
         image = Image.open(uploaded_image)
         compressed = compress_image(image)
-        st.image(image, caption="✅ Uploaded successfully", use_container_width=True)
+        st.image(image, caption=t["photo_uploaded"], use_container_width=True)
         image_part = {"mime_type": "image/jpeg", "data": compressed}
 
 # 用户提问输入
