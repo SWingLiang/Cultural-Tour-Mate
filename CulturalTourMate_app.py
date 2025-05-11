@@ -112,12 +112,11 @@ st.title(t["title"])
 st.markdown(t["slogan"])
 st.caption(t["developer"])
 
-# =========== 会话历史 =========== 
-
+# ===============会话历史==============
 if "messages" not in st.session_state:
-st.session_state["messages"] = [
-{"role": "user", "parts": "system prompt: You are CulturalTourMate..."}
-]
+    st.session_state["messages"] = [
+        {"role": "user", "parts": "system prompt: You are CulturalTourMate, a helpful and culturally knowledgeable travel assistant..."}
+    ]
 
 # ==============图像压缩处理==============
 def compress_image(image, max_size=(800, 800), quality=80):
