@@ -3,7 +3,9 @@ import google.generativeai as genai
 import dotenv
 import os
 import mimetypes
+import time
 from PIL import Image
+
 
 # ========== 页面配置 ==========
 st.set_page_config(page_title="Cultural-Tour-Mate", layout="centered")
@@ -168,8 +170,19 @@ if st.button(t["ask"]):
     if user_input:
         messages = fetch_conversation_history()
         messages.append({"role": "user", "parts": user_input})
-        with st.spinner("Processing..."):
+        
+        # 模拟加载进度条
+        progress_text = "⏳ Please wait while I analyze your question and image..."
+        my_bar = st.progress(0, text=progress_text)
+
+        for percent_complete in range(1, 91):  # 1% 到 90% 模拟加载
+            time.sleep(0.03)  # 调整这个值可以控制加载条速度
+            my_bar.progress(percent_complete, text=progress_text)
+
+        with st.spinner("🧠 Generating response..."):
             response = generate_reply(messages, user_input, image_part)
+
+        my_bar.progress(100, text="✅ Done!")
 
         if isinstance(response, str):
             st.error(response)
