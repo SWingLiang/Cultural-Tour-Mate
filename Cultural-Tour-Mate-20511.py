@@ -131,10 +131,10 @@ if st.session_state.get("show_camera", False):
 		if len(camera_image.getvalue()) > 3 * 1024 * 1024:
 			st.warning(t["oversize_error"])
 		else:
-		image = Image.open(camera_image)
-		compressed = compress_image(image)
-		st.success(t["photo_success"])
-		image_part = {"mime_type": "image/jpeg", "data": compressed}
+			image = Image.open(camera_image)
+			compressed = compress_image(image)
+			st.success(t["photo_success"])
+			image_part = {"mime_type": "image/jpeg", "data": compressed}
 
 # ================ 上传图像  ==================
 st.markdown("---")
