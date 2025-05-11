@@ -213,7 +213,7 @@ def submit_question():
 # 同行布局：文本框 + 发送按钮
 input_col, button_col = st.columns([0.8, 0.2])
 with input_col:
-    st.text_input(" ", placeholder=t["input_placeholder"], key="text_input")
+    st.text_input("", placeholder=t["input_placeholder"], key="text_input")
 with button_col:
     st.button(t["ask"], on_click=submit_question)
 
