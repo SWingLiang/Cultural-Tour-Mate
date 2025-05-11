@@ -25,7 +25,7 @@ translations = {
         "camera_on": "📸 Take a shot",
         "camera_sub": "Any cultural troubles during the tour, please take a photo and ask me.",
         "desc": "Describe what you want to learn about the image:",
-        "ask": "🦄 Send",
+        "send": "🦄 Send",
         "response": "Cultural Insight",
         "feedback": "Was this helpful? Feel free to ask more.",
         "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
@@ -218,7 +218,7 @@ with col1:
 
 with col2:
     st.write("")  # 用于对齐按钮垂直位置
-    st.button(t["send_button"], on_click=submit_question)
+    st.button(t["send"], on_click=submit_question)
 
 # ========== 对话历史 ==========
 st.markdown("---")
