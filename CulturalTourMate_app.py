@@ -133,6 +133,10 @@ def generate_reply(messages, user_input, image_part=None):
 image = None
 image_part = None
 
+def compress_image(image, max_size=(1024, 1024)):
+    image.thumbnail(max_size)
+    return image
+    
 # 拍照
 st.markdown("### " + t["camera"])
 st.markdown(t["camera_sub"])
@@ -141,6 +145,7 @@ if st.button(t["camera_on"]):
     camera_image = st.camera_input("")
     if camera_image:
         image = Image.open(camera_image)
+        image = compress_image(image)  # 自动压缩
         image_part = {
             "mime_type": "image/jpeg",
             "data": camera_image.getvalue()
@@ -161,19 +166,7 @@ if uploaded_image:
 
 if image:
     st.image(image, caption="Selected Image", use_container_width=True)
-# ============ 自动压缩图片再上传（提高计算速度） ================
-def compress_image(img: Image.Image, max_size=1000):
-    img.thumbnail((max_size, max_size))
-    buf = BytesIO()
-    img.save(buf, format="JPEG", quality=85)
-    return buf.getvalue()
 
-# 在用户上传或拍照后添加：
-compressed_data = compress_image(image)
-image_part = {
-    "mime_type": "image/jpeg",
-    "data": compressed_data
-}
 
 # ========== 用户提问 ==========
 st.markdown("---")
