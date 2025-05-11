@@ -123,18 +123,18 @@ st.caption(t["camera_note"])
 camera_image = st.camera_input(t["camera_on"])
 
 if st.button(t["camera_on"]):
-st.session_state["show_camera"] = True
+	st.session_state["show_camera"] = True
 
 if st.session_state.get("show_camera", False):
-camera_image = st.camera_input(t["camera_on"])
-if camera_image is not None:
-if len(camera_image.getvalue()) > 3 * 1024 * 1024:
-st.warning(t["oversize_error"])
-else:
-image = Image.open(camera_image)
-compressed = compress_image(image)
-st.success(t["photo_success"])
-image_part = {"mime_type": "image/jpeg", "data": compressed}
+	camera_image = st.camera_input(t["camera_on"])
+	if camera_image is not None:
+		if len(camera_image.getvalue()) > 3 * 1024 * 1024:
+			st.warning(t["oversize_error"])
+		else:
+		image = Image.open(camera_image)
+		compressed = compress_image(image)
+		st.success(t["photo_success"])
+		image_part = {"mime_type": "image/jpeg", "data": compressed}
 
 # ================ 上传图像  ==================
 st.markdown("---")
