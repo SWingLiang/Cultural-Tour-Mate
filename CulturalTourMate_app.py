@@ -169,22 +169,19 @@ if uploaded_image:
 # ============== 提问函数 ===============
 
 def generate_reply(messages, user_input, image_part=None):
-try:
-model = genai.GenerativeModel("gemini-pro-vision")
-chat = model.start_chat(history=messages)
-if image_part:
-response = chat.send_message([
-user_input,
-{"mime_type": image_part["mime_type"], "data": image_part["data"]}
-])
-else:
-response = chat.send_message(user_input)
-return response
-except Exception as e:
-import traceback
-st.error(t["api_error"])
-st.text_area("Error details", traceback.format_exc(), height=200)
-return str(e)
+    try:
+        model = genai.GenerativeModel("gemini-pro-vision")
+        chat = model.start_chat(history=messages)
+        if image_part:
+            response = chat.send_message([user_input,{"mime_type": image_part["mime_type"], "data": image_part["data"]} ])
+        else:
+            response = chat.send_message(user_input)
+            return response
+        except Exception as e:
+            import traceback
+        st.error(t["api_error"])
+        st.text_area("Error details", traceback.format_exc(), height=200)
+    return str(e)
 
 # 提问发送
 
