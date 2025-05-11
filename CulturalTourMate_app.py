@@ -89,21 +89,23 @@ avatar_url = avatar_urls.get(lang_code, '')
 # =========== Avatar 背景样式 =========== 
 
 if avatar_url:
-st.markdown(f""" <style>
-.avatar-bg {{
-position: fixed;
-bottom: 0px;
-left: 10px;
-height: 45vh;
-opacity: 0.5;
-z-index: 0;
-}}
-@media (max-width: 768px) {{
-.avatar-bg {{
-display: none;
-}}
-}} </style><img class="avatar-bg" src="{avatar_url}" />
-""", unsafe_allow_html=True)
+    st.markdown(f"""
+    <style>
+    .avatar-bg {{
+        position: fixed;
+        bottom: 0px;
+        left: 10px;
+        height: 45vh;
+        opacity: 0.5;
+        z-index: 0;
+    }}
+    @media (max-width: 768px) {{
+        .avatar-bg {{
+            display: none;
+        }}
+    }}
+    </style><img class="avatar-bg" src="{avatar_url}" />
+    """, unsafe_allow_html=True)
 
 # =========== 页面UI =========== 
 st.title(t["title"])
