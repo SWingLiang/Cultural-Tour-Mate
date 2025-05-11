@@ -6,4 +6,3 @@ Pillow>=10.0.0
 python-dotenv>=1.0.0
 opencv-python>=4.9.0.80
 opencv-python-headless
-google.generativeai.types.content_types
