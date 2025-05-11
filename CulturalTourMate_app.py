@@ -25,7 +25,7 @@ translations = {
         "camera_on": "📸 Take a shot",
         "camera_sub": "Any cultural troubles during the tour, please take a photo and ask me.",
         "desc": "Describe what you want to learn about the image:",
-        "send": "🦤 Send",
+        "send": "🦄 Send",
         "response": "Cultural Insight",
         "feedback": "Was this helpful? Feel free to ask more.",
         "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
@@ -49,7 +49,7 @@ translations = {
         "camera_on": "📸 打开相机",
         "camera_sub": "旅途中的文化困扰，请随手拍一张照片问问我。",
         "desc": "描述您想了解的图像内容：",
-        "ask": "🦤 发送",
+        "ask": "🦄 发送",
         "response": "文化背景信息",
         "feedback": "这个回答有帮助吗？欢迎继续提问。",
         "developer": "开发者：梁羡荣(Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh",
@@ -191,7 +191,7 @@ def submit_question():
             time.sleep(0.02)
             my_bar.progress(percent_complete, text=progress_text)
 
-        with st.spinner(t["respose"]):
+        with st.spinner(t["response"]):
             response = generate_reply(messages, user_text, image_part)
 
         my_bar.progress(100, text="✅")
