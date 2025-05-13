@@ -4,7 +4,7 @@ import dotenv
 import os
 from PIL import Image
 from io import BytesIO
-from google.generativeai.types import Part
+from google.generativeai import Part
 
 # 页面配置
 st.set_page_config(page_title="Cultural-Tour-Mate", layout="centered")
@@ -151,10 +151,10 @@ if st.button(text["send"]):
     if prompt and image_part:
         with st.spinner("Generating insight..."):
             model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
-            image_input = Part.from_bytes(
-                data=image_part["data"],
-                mime_type=image_part["mime_type"]
-            )
+            image_input = {
+                "mime_type": image_part["mime_type"],
+                "data": image_part["data"]
+            }
             response = model.generate_content([prompt, image_input])
             st.markdown("### " + text["response"])
             st.markdown(response.text)
