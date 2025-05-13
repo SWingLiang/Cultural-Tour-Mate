@@ -6,6 +6,7 @@ import mimetypes
 import time
 from PIL import Image
 from io import BytesIO
+from google.generativeai.types.content_types import Content, TextPart, ImagePart
 
 # ========== 页面配置 ==========
 st.set_page_config(page_title="Cultural-Tour-Mate", layout="centered")
@@ -160,6 +161,12 @@ if uploaded_image:
 st.markdown("### " + t["desc"])
 prompt = st.text_input(t["input_placeholder"])
 
+# 构造多模态内容
+message_content = Content(parts=[
+    TextPart(text=prompt),
+    ImagePart(mime_type=image_part["mime_type"], data=image_part["data"])
+])
+
 # 提问按钮
 if st.button(t["send"]):
     if prompt and image_part:
@@ -167,7 +174,7 @@ if st.button(t["send"]):
             model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
             response = model.generate_content("Hello!")
             chat = model.start_chat(history=st.session_state["messages"])
-            response = chat.send_message([prompt, image_part])
+            response = chat.send_message(message_content)
             st.session_state["messages"].append({"role": "user", "parts": prompt})
             st.session_state["messages"].append({"role": "model", "parts": response.text})
             st.markdown("### " + t["response"])
