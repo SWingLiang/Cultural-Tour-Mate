@@ -143,20 +143,36 @@ if upload_img:
         st.image(img, caption=text["photo_uploaded"], use_container_width=True)
 
 # 输入与提问
+# 提问表单（支持回车键提交 + 语言提示）
 st.markdown("### " + text["desc"])
-prompt = st.text_input(text["input_placeholder"])
+with st.form("question_form", clear_on_submit=False):
+    cols = st.columns([5, 1])
+    with cols[0]:
+        prompt = st.text_input(text["input_placeholder"], key="prompt_input")
+    with cols[1]:
+        submitted = st.form_submit_button(text["send"])
 
-if st.button(text["send"]):
+if submitted:
     if prompt and image_part:
-        with st.spinner("Generating insight..."):
+        with st.spinner("Generating insight..." if lang_code == "en" else "正在思考，请稍候...")):
             model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
+            language_prompt = "Please answer in English." if lang_code == "en" else "请用中文回答。"
             image_input = {
                 "mime_type": image_part["mime_type"],
                 "data": image_part["data"]
             }
-            response = model.generate_content([prompt, image_input])
+            response = model.generate_content([language_prompt, prompt, image_input])
             st.markdown("### " + text["response"])
             st.markdown(response.text)
             st.info(text["feedback"])
     else:
         st.warning(text["warning_image_and_question"])
+
+# 重新提问按钮（刷新页面）
+st.markdown("---")
+if st.button("🔄 " + ("Reset" if lang_code == "en" else "重新提问")):
+    st.session_state["prompt_input"] = ""
+    st.session_state["show_camera"] = False
+    image_part = None
+    st.rerun()
+
