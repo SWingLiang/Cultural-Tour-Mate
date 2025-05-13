@@ -15,9 +15,6 @@ dotenv.load_dotenv()
 
 # ========== 加载 API Key ==========
 api_key = os.getenv("GOOGLE_API_KEY")
-if not api_key:
-    raise ValueError("GOOGLE_API_KEY not found in environment. Please check .env file.")
-print("KEY LOADED:", api_key[:10], "...")  # 确认 key 被加载进来了
 
 # ========== 显式传入 key 给 Gemini========== 
 genai.configure(api_key=api_key)
