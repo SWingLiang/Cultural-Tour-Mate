@@ -10,9 +10,16 @@ from io import BytesIO
 # ========== 页面配置 ==========
 st.set_page_config(page_title="Cultural-Tour-Mate", layout="centered")
 
-# ========== 加载 API Key ==========
+# ========== 加载ENV环境 ==========
 dotenv.load_dotenv()
-api_key = os.getenv("API_KEY")
+
+# ========== 加载 API Key ==========
+api_key = os.getenv("GOOGLE_API_KEY")
+if not api_key:
+    raise ValueError("GOOGLE_API_KEY not found in environment. Please check .env file.")
+print("KEY LOADED:", api_key[:10], "...")  # 确认 key 被加载进来了
+
+# ========== 显式传入 key 给 Gemini========== 
 genai.configure(api_key=api_key)
 
 # ========== 多语言支持 ==========
