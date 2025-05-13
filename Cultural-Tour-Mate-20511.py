@@ -15,54 +15,66 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 # 多语言支持
 t = {
     "en": {
-        "title": "Cultural-Tour-Mate",
+        "title": "🏛️AI Cultural-Tour-Mate",
         "slogan": "Your trustworthy, insightful, and articulate cultural companion in tour.",
-        "upload": "Upload Image",
-        "camera": "Capture Photo",
-        "camera_on": "Take a shot",
-        "camera_sub": "Any cultural troubles during the tour, please take a photo and ask metters.",
-        "desc": "Ask Matters",
-        "send": "Send",
+        "upload": "🖼️ Upload Image",
+        "camera": "📷 Capture Photo",
+        "camera_on": "📸 Take a shot",
+        "camera_sub": "Any cultural troubles during the tour, please take a photo and ask me.",
+        "desc": "Describe what you want to learn about the image:",
+        "send": "🦄 Send",
         "response": "Cultural Insight",
         "feedback": "Was this helpful? Feel free to ask more.",
         "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
         "upload_note": "Select and upload an image from your device, the image is limited to 2 MB.",
         "camera_note": "Due to limitations, rear camera might not be accessible on tablets. Try phone or upload a photo.",
-        "input_placeholder": "Describe what you want to learn about the image...",
-        "user_role": "Ask anything",
-        "oversize_error": "Image exceeds 3MB limit. Please upload a smaller image.",
-        "no_camera": "No camera available on this device.",
-        "photo_uploaded": "Photo uploaded successfully.",
-        "warning_image_and_question": "Please provide both an image and a question.",
-        "photo_captured": "Photo captured successfully."
+        "input_placeholder": "Type your question here...",
+        "user_role": "💬 Ask anything",
+        "progress": "⏳ Please wait while I analyze your question and image...",
+        "response_title": "Cultural Insight",
+        "response_loading": "🧠 Generating response...",
+        "oversize_error": "🚫 Image exceeds 3MB limit. Please upload a smaller image.",
+        "no_camera": "⚠️ No camera available on this device.",
+        "photo_success": "✅ Photo captured successfully.",
+        "photo_captured": "✅ Photo captured successfully.",
+        "image_uploaded": "✅ Image uploaded successfully.",
+        "photo_uploaded": "✅ Image uploaded successfully.",
+        "api_error": "⚠️ Gemini API request failed. Check your network or API Key.",
+        "text_unsendable": "⚠️ You have to upload a picture before asking a question."
     },
     "zh": {
-        "title": "AI文化旅伴",
-        "slogan": "您忠实博学且智慧的文化旅行小伙伴。",
-        "upload": "上传图像",
-        "camera": "环境拍照",
-        "camera_on": "打开相机",
+        "title": "🏛️智慧文化旅伴",
+        "slogan": "您忠实博学且智慧的文化旅行小伴伙。",
+        "upload": "🖼️ 上传图像",
+        "camera": "📷 环境拍照",
+        "camera_on": "📸 打开相机",
         "camera_sub": "旅途中的文化困扰，请随手拍一张照片问问我。",
-        "desc": "描述问题",
-        "send": "发送",
+        "desc": "💬描述您的疑问：",
+        "send": "🦄 发送",
         "response": "文化背景信息",
         "feedback": "这个回答有帮助吗？欢迎继续提问。",
-        "developer": "开发者：梁贤荣(Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh",
+        "developer": "开发者：梁羡荣(Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh",
         "upload_note": "从您的设备中选择并上传一张图片，大小不超2M。",
         "camera_note": "由于技术限制，部分平板不支持后置摄像头，建议使用手机或上传照片。",
-        "input_placeholder": "描述您想了解的图像内容...",
-        "user_role": "请您提问",
-        "oversize_error": "图像大小超过3MB限制，请重新选择。",
-        "no_camera": "当前设备无可用摄像头。",
-        "photo_uploaded": "照片上传成功！",
-        "warning_image_and_question": "请同时提供图片和问题描述。",
-        "photo_captured": "照片拍摄成功！"
+        "input_placeholder": "请输入您的问题...",
+        "user_role": "💬 请您提问",
+        "progress": "⏳ 请稍后，正在分析您的图像与问题...",
+        "response_title": "深挖文化元素",
+        "response_loading": "🧠 正在生成对话...",
+        "oversize_error": "🚫 图像大小超3MB限制，请重新选择。",
+        "no_camera": "⚠️ 当前设备无可用摄像头。",
+        "photo_success": "✅ 拍照成功。",
+        "photo_captured": "✅ 拍照成功。",
+        "image_uploaded": "✅ 图片上传成功。",
+        "photo_uploaded": "✅ 图片上传成功。",
+        "api_error": "⚠️ Gemini API 链接失败. 请检查你的API密钥.",
+        "text_unsendable": "⚠️ 发消息前请拍照或上传一张图片。"
     }
 }
 
 # 语言选择
 lang_map = {"English": "en", "中文": "zh"}
-st.markdown("### Language Selection / 语言选择")
+st.markdown("### 🌐Language "U+1F1FA U+1F1F8" "U+1F1E8 U+1F1F3"/ 语言")
 lang_code = lang_map[st.selectbox("", list(lang_map.keys()))]
 text = t[lang_code]
 
