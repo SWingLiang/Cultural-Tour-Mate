@@ -154,7 +154,7 @@ with st.form("question_form", clear_on_submit=False):
 
 if submitted:
     if prompt and image_part:
-        with st.spinner("Generating insight..." if lang_code == "en" else "正在思考，请稍候...")):
+        with st.spinner("Generating insight..." if lang_code == "en" else "正在思考，请稍候..."):
             model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
             language_prompt = "Please answer in English." if lang_code == "en" else "请用中文回答。"
             image_input = {
