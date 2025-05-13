@@ -59,7 +59,7 @@ translations = {
         "camera": "📷 环境拍照",
         "camera_on": "📸 打开相机",
         "camera_sub": "旅途中的文化困扰，请随手拍一张照片问问我。",
-        "desc": "描述您想了解的图像内容：",
+        "desc": "💬描述您的疑问：",
         "send": "🦄 发送",
         "response": "文化背景信息",
         "feedback": "这个回答有帮助吗？欢迎继续提问。",
