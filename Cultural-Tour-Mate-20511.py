@@ -10,9 +10,16 @@ from io import BytesIO
 # ========== 页面配置 ==========
 st.set_page_config(page_title="Cultural-Tour-Mate", layout="centered")
 
-# ========== 加载 API Key ==========
+# ========== 加载ENV环境 ==========
 dotenv.load_dotenv()
-api_key = os.getenv("API_KEY")
+
+# ========== 加载 API Key ==========
+api_key = os.getenv("GOOGLE_API_KEY")
+if not api_key:
+    raise ValueError("GOOGLE_API_KEY not found in environment. Please check .env file.")
+print("KEY LOADED:", api_key[:10], "...")  # 确认 key 被加载进来了
+
+# ========== 显式传入 key 给 Gemini========== 
 genai.configure(api_key=api_key)
 
 # ========== 多语言支持 ==========
@@ -69,7 +76,7 @@ lang_map = {"English": "en", "中文": "zh"}
 lang_code = lang_map[language]
 t = translations[lang_code]
 
-# 头像展示
+# 语言形象展示
 avatar_urls = {
     "en": "https://static.vecteezy.com/system/resources/previews/055/495/027/non_2x/a-man-in-a-white-t-shirt-and-jeans-free-png.png",
     "zh": "https://static.vecteezy.com/system/resources/previews/013/167/583/original/portrait-of-a-smiling-asian-woman-cutout-file-png.png",
@@ -160,14 +167,17 @@ prompt = st.text_input(t["input_placeholder"])
 if st.button(t["send"]):
     if prompt and image_part:
         with st.spinner("Generating insight..."):
-            model = genai.GenerativeModel("gemini-pro-vision")
-            chat = model.start_chat(history=st.session_state["messages"])
-            response = chat.send_message([prompt, image_part])
-            st.session_state["messages"].append({"role": "user", "parts": prompt})
-            st.session_state["messages"].append({"role": "model", "parts": response.text})
-            st.markdown("### " + t["response"])
-            st.markdown(response.text)
-            st.info(t["feedback"])
+            model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
+            response = model.generate_content("Hello!")
+            print(response.text)
+            # chat = model.start_chat(history=st.session_state["messages"])
+            # response = chat.send_message([prompt, image_part])
+
+            # st.session_state["messages"].append({"role": "user", "parts": prompt})
+            # st.session_state["messages"].append({"role": "model", "parts": response.text})
+            # st.markdown("### " + t["response"])
+            # st.markdown(response.text)
+           # st.info(t["feedback"])
     else:
         st.warning(t["warning_image_and_question"])
 
