@@ -6,3 +6,9 @@ Pillow>=10.0.0
 python-dotenv>=1.0.0
 opencv-python>=4.9.0.80
 opencv-python-headless
+flask
+flask-cors
+openai
+gTTS
+playsound; platform_system == "Windows"  # Windows 使用 playsound 播放音频
+pygame; platform_system != "Windows"     # 非 Windows 系统使用 pygame 播放音频
