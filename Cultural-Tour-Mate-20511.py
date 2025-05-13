@@ -109,7 +109,7 @@ st.caption(t["developer"])
 # ===============会话历史==============
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        {"role": "user", "parts": "system prompt: You are CulturalTourMate, a helpful and culturally knowledgeable travel assistant..."}
+        {"role": "system", "parts": "system prompt: You are CulturalTourMate, a helpful and culturally knowledgeable travel assistant."}
     ]
 
 # ==============图像压缩处理==============
@@ -149,7 +149,7 @@ st.markdown("---")
 st.markdown("### " + t["upload"])
 st.markdown(t["upload_note"])
 
-uploaded_image = st.file_uploader(label="", type=["jpg", "jpeg", "png"])
+uploaded_image = st.file_uploader(label="", type=["jpg", "jpeg", "png", "webp"])
 if uploaded_image:
     if uploaded_image.size > 3 * 1024 * 1024:
         st.warning(t["oversize_error"])
