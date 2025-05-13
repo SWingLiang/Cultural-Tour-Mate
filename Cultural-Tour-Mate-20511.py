@@ -62,7 +62,8 @@ t = {
 
 # 语言选择
 lang_map = {"English": "en", "中文": "zh"}
-lang_code = lang_map[st.selectbox("Language / 语言", list(lang_map.keys()))]
+st.markdown("### Language Selection / 语言选择")
+lang_code = lang_map[st.selectbox("", list(lang_map.keys()))]
 text = t[lang_code]
 
 # 页面头像装饰
