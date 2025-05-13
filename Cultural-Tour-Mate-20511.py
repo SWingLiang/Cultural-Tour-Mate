@@ -152,7 +152,7 @@ if st.button(text["send"]):
             model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
             response = model.generate_content([
                 prompt,
-                genai.types.content_types.ImagePart(
+                genai.ImagePart(  # ✅ 正确的构造方式
                     mime_type=image_part["mime_type"],
                     data=image_part["data"]
                 )
