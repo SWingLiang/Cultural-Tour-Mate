@@ -169,15 +169,13 @@ if st.button(t["send"]):
         with st.spinner("Generating insight..."):
             model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
             response = model.generate_content("Hello!")
-            print(response.text)
-            # chat = model.start_chat(history=st.session_state["messages"])
-            # response = chat.send_message([prompt, image_part])
-
-            # st.session_state["messages"].append({"role": "user", "parts": prompt})
-            # st.session_state["messages"].append({"role": "model", "parts": response.text})
-            # st.markdown("### " + t["response"])
-            # st.markdown(response.text)
-           # st.info(t["feedback"])
+            chat = model.start_chat(history=st.session_state["messages"])
+            response = chat.send_message([prompt, image_part])
+            st.session_state["messages"].append({"role": "user", "parts": prompt})
+            st.session_state["messages"].append({"role": "model", "parts": response.text})
+            st.markdown("### " + t["response"])
+            st.markdown(response.text)
+            st.info(t["feedback"])
     else:
         st.warning(t["warning_image_and_question"])
 
