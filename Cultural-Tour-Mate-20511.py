@@ -33,7 +33,7 @@ t = {
         "progress": "⏳ Please wait while I analyze your question and image...",
         "response_title": "💬 Cultural Insight",
         "response_loading": "🧠 Generating response...",
-        "oversize_error": "🚫 Image exceeds 3MB limit. Please upload a smaller image.",
+        "oversize_error": "🚫 Image exceeds 2MB limit. Please upload a smaller image.",
         "no_camera": "⚠️ No camera available on this device.",
         "photo_success": "✅ Photo captured successfully.",
         "photo_captured": "✅ Photo captured successfully.",
@@ -62,7 +62,7 @@ t = {
         "progress": "⏳ 请稍后，正在分析您的图像与问题...",
         "response_title": "💬 文化洞察",
         "response_loading": "🧠 正在生成对话...",
-        "oversize_error": "🚫 图像大小超3MB限制，请重新选择。",
+        "oversize_error": "🚫 图像大小超2MB限制，请重新选择。",
         "no_camera": "⚠️ 当前设备无可用摄像头。",
         "photo_success": "✅ 拍照成功。",
         "photo_captured": "✅ 拍照成功。",
@@ -115,6 +115,7 @@ if "messages" not in st.session_state:
 
 # 图像压缩
 def compress_image(image, max_size=(800, 800), quality=80):
+    image = image.convert("RGB")  # 保证 JPEG 兼容性
     image.thumbnail(max_size)
     buf = BytesIO()
     image.save(buf, format="JPEG", quality=quality)
@@ -218,13 +219,15 @@ if submitted:
     else:
         st.warning(text["text_unsendable"])
 
-## 重新提问
+# 重新提问按钮处理
 if st.session_state.get("answer_generated", False):
     if st.button(text["reask"]):
         keys_to_clear = [
-            "prompt_input", "image_part", "answer_generated", 
-            "show_camera", "prompt", "camera_img", "upload_img"
+            "prompt_input", "image_part", "answer_generated",
+            "show_camera"
         ]
         for key in keys_to_clear:
-            st.session_state.pop(key, None)
+            if key in st.session_state:
+                del st.session_state[key]
         st.rerun()
+
