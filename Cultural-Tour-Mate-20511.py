@@ -45,11 +45,11 @@ t = {
     },
     "zh": {
         "title": "🏛️智慧文化旅伴",
-        "slogan": "您忠实博学且智慧的文化旅行小伴伙。",
+        "slogan": "您忠实博学且智慧的文化旅行小伙伴。",
         "upload": "🖼️ 上传图像",
-        "camera": "📷 环境拍照",
+        "camera": "📷 现场拍照",
         "camera_on": "📸 打开相机",
-        "camera_sub": "旅途中的文化困扰，请随手拍一张照片问问我。",
+        "camera_sub": "旅途中的文化困扰，请随手拍一张照片给我看看。",
         "desc": "📝 描述您的疑问：",
         "send": "🎈 发送",
         "response": "文化背景信息",
@@ -202,10 +202,10 @@ if submitted:
 
             # 聊天气泡样式
             user_bubble = f"""
-            <div style='text-align: right; background-color: #990000; padding: 10px; border-radius: 12px; margin: 5px 0;'>{prompt}</div>
+            <div style='text-align: right; background-color: #990000B7; padding: 10px; border-radius: 12px; margin: 5px 0;'>{prompt}</div>
             """
             ai_bubble = f"""
-            <div style='text-align: left; background-color: #555555; padding: 10px; border-radius: 12px; margin: 5px 0;'>{response.text}</div>
+            <div style='text-align: left; background-color: #555555B7; padding: 10px; border-radius: 12px; margin: 5px 0;'>{response.text}</div>
             """
             st.markdown(user_bubble, unsafe_allow_html=True)
             st.markdown(ai_bubble, unsafe_allow_html=True)
