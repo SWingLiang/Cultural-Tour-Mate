@@ -74,9 +74,10 @@ t = {
 
 # 语言选择
 lang_map = {"English": "en", "中文": "zh"}
-st.markdown("### 🌐Language "U+1F1FA U+1F1F8" "U+1F1E8 U+1F1F3"/ 语言")
-lang_code = lang_map[st.selectbox("", list(lang_map.keys()))]
+st.markdown("### 🌐Language / 语言")
+lang_code = lang_map[st.radio("", list(lang_map.keys()), horizontal=True)]
 text = t[lang_code]
+
 
 # 页面头像装饰
 avatar_urls = {
@@ -159,9 +160,13 @@ if upload_img:
 st.markdown("### " + text["desc"])
 with st.form("question_form", clear_on_submit=False):
     cols = st.columns([5, 1])
+
     with cols[0]:
         prompt = st.text_input(text["input_placeholder"], key="prompt_input")
+
     with cols[1]:
+        # 用 st.markdown 或 st.write 添加空行，使按钮下移与输入框底部对齐
+        st.markdown("###")  # 也可以尝试 "##" 或 "<br>", 视情况微调
         submitted = st.form_submit_button(text["send"])
 
 if submitted:
@@ -182,7 +187,7 @@ if submitted:
 
 # 重新提问按钮（刷新页面）
 st.markdown("---")
-if st.button("🔄 " + ("Reset" if lang_code == "en" else "重新提问")):
+if st.button("🔄 " + ("Ask again" if lang_code == "en" else "重新提问")):
     st.session_state["prompt_input"] = ""
     st.session_state["show_camera"] = False
     image_part = None
