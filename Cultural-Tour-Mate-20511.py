@@ -195,7 +195,7 @@ if "show_camera" not in st.session_state:
 
 # 重新提问按钮（刷新页面）
 st.markdown("---")
-if st.button(t[resk]):
+if st.button(t[reask]):
     st.session_state["prompt_input"] = ""
     st.session_state["show_camera"] = False
     image_part = None
