@@ -40,7 +40,7 @@ t = {
         "image_uploaded": "✅ Image uploaded successfully.",
         "photo_uploaded": "✅ Image uploaded successfully.",
         "api_error": "⚠️ Gemini API request failed. Check your network or API Key.",
-        "reask": "♻️ Ask again",
+        "reask": "♻️ Ask another",
         "text_unsendable": "⚠️ You have to upload a picture before asking a question."
     },
     "zh": {
@@ -160,11 +160,12 @@ if upload_img:
 # 输入与提问
 # 提问表单（支持回车键提交 + 语言提示）
 st.markdown("### " + text["desc"])
+st.caption(text["input_placeholder"])
 with st.form("question_form", clear_on_submit=False):
     cols = st.columns([5, 1])
 
     with cols[0]:
-        prompt = st.text_input(text["input_placeholder"], key="prompt_input")
+        prompt = st.text_input(key="prompt_input")
 
     with cols[1]:
         # 用 st.markdown 或 st.write 添加空行，使按钮下移与输入框底部对齐
@@ -196,7 +197,11 @@ if submitted:
     else:
         st.warning(text["warning_image_and_question"])
 
-## 页面重载
-
+## 重新提问
 if st.button(text["reask"]):
+    # 清除所有信息，保留语言设置
+    for key in ["prompt_input", "image_part", "answer_generated", "show_camera"]:
+        if key in st.session_state:
+            del st.session_state[key]
     st.rerun()
+
