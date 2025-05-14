@@ -187,17 +187,14 @@ if submitted:
     else:
         st.warning(text["warning_image_and_question"])
 
-# 重新提问按钮（刷新页面）
-if "prompt_input" not in st.session_state:
-    st.session_state["prompt_input"] = ""
-if "show_camera" not in st.session_state:
-    st.session_state["show_camera"] = False
+# 初始化 session_state 变量
+st.session_state.setdefault("prompt_input", "")
+st.session_state.setdefault("show_camera", False)
 
-# 重新提问按钮（刷新页面）
+# 重新提问按钮
 st.markdown("---")
-if st.button(text["reask"]):
+if st.button("🔄 " + ("Ask again" if lang_code == "en" else "重新提问")):
     st.session_state["prompt_input"] = ""
     st.session_state["show_camera"] = False
     image_part = None
     st.rerun()
-
