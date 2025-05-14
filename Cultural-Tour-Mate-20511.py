@@ -41,7 +41,7 @@ t = {
         "photo_uploaded": "✅ Image uploaded successfully.",
         "api_error": "⚠️ Gemini API request failed. Check your network or API Key.",
         "reask": "♻️ Ask another",
-        "text_unsendable": "⚠️ You have to upload a picture before asking a question."
+        "text_unsendable": "⚠️ You must upload a picture before asking a question."
     },
     "zh": {
         "title": "🏛️智慧文化旅伴",
@@ -205,7 +205,7 @@ if submitted:
             st.info(text["feedback"])
 
             # 清除输入框
-            st.session_state["prompt_input"] = ""
+            st.session_state.update({"prompt_input": ""})
             st.session_state["answer_generated"] = True
             st.session_state["image_part"] = image_part
     else:
