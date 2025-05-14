@@ -106,6 +106,7 @@ if avatar_url:
 st.title(text["title"])
 st.markdown(text["slogan"])
 st.caption(text["developer"])
+st.markdown("---")
 
 # 会话初始化
 if "messages" not in st.session_state:
@@ -144,7 +145,7 @@ if st.session_state["show_camera"]:
             st.image(img, caption=text["photo_captured"], use_container_width=True)
 
 # 上传模块
-st.markdown("---")
+st.caption("---")
 st.markdown("### " + text["upload"])
 st.markdown(text["upload_note"])
 
