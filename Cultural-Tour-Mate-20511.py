@@ -166,7 +166,7 @@ with st.form("question_form", clear_on_submit=False):
 
     with cols[1]:
         # 用 st.markdown 或 st.write 添加空行，使按钮下移与输入框底部对齐
-        st.markdown("**")  # 也可以尝试 "##" 或 "<br>", 视情况微调
+        st.markdown("###")  # 也可以尝试 "##" 或 "<br>", 视情况微调
         submitted = st.form_submit_button(text["send"])
 
 if submitted:
