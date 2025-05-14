@@ -40,7 +40,7 @@ t = {
         "image_uploaded": "✅ Image uploaded successfully.",
         "photo_uploaded": "✅ Image uploaded successfully.",
         "api_error": "⚠️ Gemini API request failed. Check your network or API Key.",
-        "reask": "🔄 Ask again",
+        "reask": "♻️ Ask again",
         "text_unsendable": "⚠️ You have to upload a picture before asking a question."
     },
     "zh": {
@@ -69,7 +69,7 @@ t = {
         "image_uploaded": "✅ 图片上传成功。",
         "photo_uploaded": "✅ 图片上传成功。",
         "api_error": "⚠️ Gemini API 链接失败. 请检查你的API密钥.",
-        "reask": "🔄 重新提问",
+        "reask": "♻️ 重新提问",
         "text_unsendable": "⚠️ 发消息前请拍照或上传一张图片。"
     }
 }
@@ -205,7 +205,7 @@ st.session_state.setdefault("image_part", None)  # ✅ 可选添加，确保 ima
 # 重新提问按钮
 st.markdown("---")
 if st.session_state.get("answer_generated"):
-    if st.button("🔄 " + text["reask"]):
+    if st.button(text["reask"]):
         st.session_state["prompt_input"] = ""
         st.session_state["show_camera"] = False
         st.session_state["answer_generated"] = False  # 重置为未生成
