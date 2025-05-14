@@ -214,6 +214,8 @@ if submitted:
             # 清除输入框
             if "prompt_input" in st.session_state:
                 st.session_state["prompt_input"] = ""
+            else:
+                st.session_state["prompt_input"] = ""
             st.rerun()
             st.session_state["answer_generated"] = True
             st.session_state["image_part"] = image_part
