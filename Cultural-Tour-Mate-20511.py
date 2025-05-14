@@ -130,10 +130,16 @@ st.caption(text["camera_note"])
 if "show_camera" not in st.session_state:
     st.session_state["show_camera"] = False
 
-if st.session_state["show_camera"]:
+# 拍照按钮显示逻辑
+if not st.session_state["show_camera"]:
+    if st.button(text["camera_on"]):  # 例如 📸 Take a shot
+        st.session_state["show_camera"] = True
+        st.rerun()
+else:
     if st.button("❌ Close Camera" if lang_code == "en" else "❌ 关闭相机"):
         st.session_state["show_camera"] = False
         st.rerun()
+
 
 if st.session_state["show_camera"]:
     camera_img = st.camera_input("camera_capture")
@@ -205,7 +211,8 @@ if submitted:
             st.info(text["feedback"])
 
             # 清除输入框
-            st.session_state.update({"prompt_input": ""})
+            st.session_state["prompt_input"] = ""
+            st.rerun()
             st.session_state["answer_generated"] = True
             st.session_state["image_part"] = image_part
     else:
