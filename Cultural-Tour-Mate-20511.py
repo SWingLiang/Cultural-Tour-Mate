@@ -159,8 +159,9 @@ if upload_img:
 
 # 输入与提问
 # 提问表单（支持回车键提交 + 语言提示）
+st.markdown("---")
 st.markdown("### " + text["desc"])
-st.caption(text["input_placeholder"])
+st.markdown(text["input_placeholder"])
 with st.form("question_form", clear_on_submit=False):
     cols = st.columns([5, 1])
 
