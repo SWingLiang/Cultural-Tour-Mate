@@ -166,7 +166,7 @@ with st.form("question_form", clear_on_submit=False):
 
     with cols[0]:
         prompt = st.text_input(
-            label="输入",  # 实际不会显示
+            label="### ",  # 实际不会显示
             key="prompt_input",
             label_visibility="collapsed"
         )
