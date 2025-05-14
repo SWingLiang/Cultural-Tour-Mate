@@ -21,10 +21,10 @@ t = {
         "camera": "📷 Capture Photo",
         "camera_on": "📸 Take a shot",
         "camera_sub": "Any cultural troubles during the tour, please take a photo and ask me.",
-        "desc": "💬 Describe Matters",
+        "desc":📝 Describe Matters",
         "send": "🦄 Send",
         "response": "Cultural Insight",
-        "feedback": "Was this helpful? Feel free to ask more.",
+        "feedback": "🧠 Was this helpful? Feel free to ask more.",
         "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
         "upload_note": "Select and upload an image from your device, the image is limited to 2 MB.",
         "camera_note": "Due to limitations, rear camera might not be accessible on tablets. Try phone or upload a photo.",
@@ -50,15 +50,15 @@ t = {
         "camera": "📷 环境拍照",
         "camera_on": "📸 打开相机",
         "camera_sub": "旅途中的文化困扰，请随手拍一张照片问问我。",
-        "desc": "💬描述您的疑问：",
-        "send": "🦄 发送",
+        "desc": "📝 描述您的疑问：",
+        "send":🎈 发送",
         "response": "文化背景信息",
         "feedback": "这个回答有帮助吗？欢迎继续提问。",
         "developer": "开发者：梁羡荣(Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh",
         "upload_note": "从您的设备中选择并上传一张图片，大小不超2M。",
         "camera_note": "由于技术限制，部分平板不支持后置摄像头，建议使用手机或上传照片。",
         "input_placeholder": "请在文本框中描述您的问题...",
-        "user_role": "💬 请您提问",
+        "user_role": "🎈 请您提问",
         "progress": "⏳ 请稍后，正在分析您的图像与问题...",
         "response_title": "深挖文化元素",
         "response_loading": "🧠 正在生成对话...",
@@ -182,30 +182,47 @@ if submitted:
         with st.spinner("Generating insight..." if lang_code == "en" else "正在思考，请稍候..."):
             model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
             language_prompt = "Please answer in English." if lang_code == "en" else "请用中文回答。"
-            
+
             image_input = {
                 "mime_type": image_part["mime_type"],
                 "data": image_part["data"]
             }
 
             response = model.generate_content([language_prompt, prompt, image_input])
-            st.markdown("### " + text["response"])
-            st.markdown(response.text)
-            st.info(text["feedback"])
-            
-            # ✅ 设置为已生成
+
+            # ✅ 将用户输入和AI回复加入对话历史
+            st.session_state["messages"].append({"role": "user", "parts": prompt})
+            st.session_state["messages"].append({"role": "model", "parts": response.text})
+
+            # ✅ 清空文本输入框
+            st.session_state["prompt_input"] = ""
+
+            # ✅ 标记已生成
             st.session_state["answer_generated"] = True
-            # ✅ 存储图片信息
             st.session_state["image_part"] = image_part
 
     else:
-        st.warning(text["warning_image_and_question"])
+        st.warning(text["text_unsendable"])
 
-## 重新提问
-if st.button(text["reask"]):
-    # 清除所有信息，保留语言设置
-    for key in ["prompt_input", "image_part", "answer_generated", "show_camera"]:
-        if key in st.session_state:
-            del st.session_state[key]
-    st.rerun()
+# 重新提问
+# ✅ 仅在生成回答后才显示重新提问按钮
+if st.session_state.get("answer_generated", False):
+    if st.button(text["reask"]):
+        # 完整清除所有会话相关状态
+        keys_to_clear = [
+            "prompt_input", "image_part", "answer_generated", "show_camera",
+            "prompt", "camera_img", "upload_img", "messages"
+        ]
+        for key in keys_to_clear:
+            if key in st.session_state:
+                del st.session_state[key]
+        st.rerun()
+        
+# ✅ 聊天气泡式对话显示
+st.markdown("### " + text["response_title"])
+for msg in st.session_state.get("messages", []):
+    if msg["role"] == "user":
+        st.markdown(f"<div style='text-align: right; color: #0a9396;'><b>{text['user_role']}:</b> {msg['parts']}</div>", unsafe_allow_html=True)
+    elif msg["role"] == "model":
+        st.markdown(f"<div style='text-align: left; color: #005f73;'><b>🤖 {text['response']}:</b> {msg['parts']}</div>", unsafe_allow_html=True)
 
