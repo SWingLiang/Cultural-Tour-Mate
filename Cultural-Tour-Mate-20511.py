@@ -168,7 +168,7 @@ with st.form("question_form", clear_on_submit=False):
 
     with cols[1]:
         # 用 st.markdown 或 st.write 添加空行，使按钮下移与输入框底部对齐
-        st.markdown(" ")  # 也可以尝试 "##" 或 "<br>", 视情况微调
+        st.markdown("####")  # 
         submitted = st.form_submit_button(text["send"])
 
 if submitted:
@@ -195,7 +195,7 @@ if "show_camera" not in st.session_state:
 
 # 重新提问按钮（刷新页面）
 st.markdown("---")
-if st.button["reask"]:
+if st.button(text["reask"]):
     st.session_state["prompt_input"] = ""
     st.session_state["show_camera"] = False
     image_part = None
