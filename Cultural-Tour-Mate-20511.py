@@ -195,10 +195,10 @@ if submitted:
 
             # 聊天气泡样式
             user_bubble = f"""
-            <div style='text-align: right; background-color: #f5f5f5; padding: 10px; border-radius: 12px; margin: 5px 0;'>{prompt}</div>
+            <div style='text-align: right; background-color: #f2f2f2; padding: 10px; border-radius: 12px; margin: 5px 0;'>{prompt}</div>
             """
             ai_bubble = f"""
-            <div style='text-align: left; background-color: #f4f4f4; padding: 10px; border-radius: 12px; margin: 5px 0;'>{response.text}</div>
+            <div style='text-align: left; background-color: #f1f1f1; padding: 10px; border-radius: 12px; margin: 5px 0;'>{response.text}</div>
             """
             st.markdown(user_bubble, unsafe_allow_html=True)
             st.markdown(ai_bubble, unsafe_allow_html=True)
