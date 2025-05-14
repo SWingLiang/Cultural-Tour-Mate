@@ -165,7 +165,11 @@ with st.form("question_form", clear_on_submit=False):
     cols = st.columns([5, 1])
 
     with cols[0]:
-        prompt = st.text_input(key="prompt_input")
+        prompt = st.text_input(
+            label="输入",  # 实际不会显示
+            key="prompt_input",
+            label_visibility="collapsed"
+        )
 
     with cols[1]:
         # 用 st.markdown 或 st.write 添加空行，使按钮下移与输入框底部对齐
