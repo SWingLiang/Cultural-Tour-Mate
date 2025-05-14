@@ -76,7 +76,7 @@ t = {
 
 # 语言选择
 lang_map = {"English": "en", "中文": "zh"}
-st.markdown("### 🌐Language / 语言")
+st.markdown("🌐Language / 语言")
 lang_code = lang_map[st.radio("", list(lang_map.keys()), horizontal=True)]
 text = t[lang_code]
 
@@ -131,8 +131,10 @@ st.caption(text["camera_note"])
 if "show_camera" not in st.session_state:
     st.session_state["show_camera"] = False
 
-if st.button(text["camera_on"]):
-    st.session_state["show_camera"] = True
+if st.session_state["show_camera"]:
+    if st.button("❌ Close Camera" if lang_code == "en" else "❌ 关闭相机"):
+        st.session_state["show_camera"] = False
+        st.rerun()
 
 if st.session_state["show_camera"]:
     camera_img = st.camera_input("camera_capture")
@@ -145,7 +147,7 @@ if st.session_state["show_camera"]:
             st.image(img, caption=text["photo_captured"], use_container_width=True)
 
 # 上传模块
-st.caption("---")
+st.markdown("---")
 st.markdown("### " + text["upload"])
 st.markdown(text["upload_note"])
 
@@ -189,41 +191,34 @@ if submitted:
                 "data": image_part["data"]
             }
 
+            # 请求回复
             response = model.generate_content([language_prompt, prompt, image_input])
 
-            # ✅ 将用户输入和AI回复加入对话历史
-            st.session_state["messages"].append({"role": "user", "parts": prompt})
-            st.session_state["messages"].append({"role": "model", "parts": response.text})
+            # 聊天气泡样式
+            user_bubble = f"""
+            <div style='text-align: right; background-color: #dcf8c6; padding: 10px; border-radius: 12px; margin: 5px 0;'>{prompt}</div>
+            """
+            ai_bubble = f"""
+            <div style='text-align: left; background-color: #f1f0f0; padding: 10px; border-radius: 12px; margin: 5px 0;'>{response.text}</div>
+            """
+            st.markdown(user_bubble, unsafe_allow_html=True)
+            st.markdown(ai_bubble, unsafe_allow_html=True)
+            st.info(text["feedback"])
 
-            # ✅ 清空文本输入框
+            # 清除输入框
             st.session_state["prompt_input"] = ""
-
-            # ✅ 标记已生成
             st.session_state["answer_generated"] = True
             st.session_state["image_part"] = image_part
-
     else:
         st.warning(text["text_unsendable"])
 
-# 重新提问
-# ✅ 仅在生成回答后才显示重新提问按钮
+## 重新提问
 if st.session_state.get("answer_generated", False):
     if st.button(text["reask"]):
-        # 完整清除所有会话相关状态
         keys_to_clear = [
-            "prompt_input", "image_part", "answer_generated", "show_camera",
-            "prompt", "camera_img", "upload_img", "messages"
+            "prompt_input", "image_part", "answer_generated", 
+            "show_camera", "prompt", "camera_img", "upload_img"
         ]
         for key in keys_to_clear:
-            if key in st.session_state:
-                del st.session_state[key]
+            st.session_state.pop(key, None)
         st.rerun()
-        
-# ✅ 聊天气泡式对话显示
-st.markdown("### " + text["response_title"])
-for msg in st.session_state.get("messages", []):
-    if msg["role"] == "user":
-        st.markdown(f"<div style='text-align: right; color: #0a9396;'><b>{text['user_role']}:</b> {msg['parts']}</div>", unsafe_allow_html=True)
-    elif msg["role"] == "model":
-        st.markdown(f"<div style='text-align: left; color: #005f73;'><b>🤖 {text['response']}:</b> {msg['parts']}</div>", unsafe_allow_html=True)
-
