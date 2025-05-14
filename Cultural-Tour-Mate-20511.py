@@ -24,7 +24,7 @@ t = {
         "desc": "📝 Describe Matters",
         "send": "🎈 Send",
         "response": "Cultural Insight",
-        "feedback": "🧠 Was this helpful? Feel free to ask more.",
+        "feedback": "🦄 Was this helpful? Feel free to ask more.",
         "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
         "upload_note": "Select and upload an image from your device, the image is limited to 2 MB.",
         "camera_note": "Due to limitations, rear camera might not be accessible on tablets. Try phone or upload a photo.",
@@ -53,7 +53,7 @@ t = {
         "desc": "📝 描述您的疑问：",
         "send": "🎈 发送",
         "response": "文化背景信息",
-        "feedback": "这个回答有帮助吗？欢迎继续提问。",
+        "feedback": "🦄 这个回答有帮助吗？欢迎继续提问。",
         "developer": "开发者：梁羡荣(Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh",
         "upload_note": "从您的设备中选择并上传一张图片，大小不超2M。",
         "camera_note": "由于技术限制，部分平板不支持后置摄像头，建议使用手机或上传照片。",
@@ -74,9 +74,8 @@ t = {
     }
 }
 
-# 语言选择
+# 语言选择 st.markdown("🌐Language / 语言")
 lang_map = {"English": "en", "中文": "zh"}
-# st.markdown("🌐Language / 语言")
 lang_code = lang_map[st.radio("", list(lang_map.keys()), horizontal=True)]
 text = t[lang_code]
 
@@ -182,7 +181,7 @@ with st.form("question_form", clear_on_submit=False):
 # [生成回答]
 if submitted:
     if prompt and image_part:
-        with st.spinner("Generating insight..." if lang_code == "en" else "正在思考，请稍候..."):
+        with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
             model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
             language_prompt = "Please answer in English." if lang_code == "en" else "请用中文回答。"
 
@@ -196,10 +195,10 @@ if submitted:
 
             # 聊天气泡样式
             user_bubble = f"""
-            <div style='text-align: right; background-color: #dcf8c6; padding: 10px; border-radius: 12px; margin: 5px 0;'>{prompt}</div>
+            <div style='text-align: right; background-color: #f5f5f5; padding: 10px; border-radius: 12px; margin: 5px 0;'>{prompt}</div>
             """
             ai_bubble = f"""
-            <div style='text-align: left; background-color: #f1f0f0; padding: 10px; border-radius: 12px; margin: 5px 0;'>{response.text}</div>
+            <div style='text-align: left; background-color: #f4f4f4; padding: 10px; border-radius: 12px; margin: 5px 0;'>{response.text}</div>
             """
             st.markdown(user_bubble, unsafe_allow_html=True)
             st.markdown(ai_bubble, unsafe_allow_html=True)
