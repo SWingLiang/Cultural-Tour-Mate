@@ -168,7 +168,7 @@ with st.form("question_form", clear_on_submit=False):
 
     with cols[1]:
         # 用 st.markdown 或 st.write 添加空行，使按钮下移与输入框底部对齐
-        st.markdown("##### ")  # 
+        st.markdown(<br>)  # 
         submitted = st.form_submit_button(text["send"])
 
 # [生成回答]
@@ -201,14 +201,18 @@ st.session_state.setdefault("answer_generated", False)
 st.session_state.setdefault("prompt_input", "")
 st.session_state.setdefault("show_camera", False)
 st.session_state.setdefault("image_part", None)  # ✅ 可选添加，确保 image_part 安全引用
+st.session_state.setdefault("reask_clicked", False)
 
-# 重新提问按钮
-st.markdown("---")
-if st.session_state.get("answer_generated"):
-    if st.button(text["reask"]):
-        st.session_state["prompt_input"] = ""
-        st.session_state["show_camera"] = False
-        st.session_state["answer_generated"] = False  # 重置为未生成
-        image_part = None
-        st.rerun()
+if st.button(text["reask"]):
+    # 先设置 session 中的标志变量，其他值等 rerun 后再重新设定
+    st.session_state["reask_clicked"] = True
+    st.rerun()
+
+# 页面重载后处理
+if st.session_state.get("reask_clicked"):
+    st.session_state["prompt_input"] = ""
+    st.session_state["show_camera"] = False
+    st.session_state["answer_generated"] = False
+    st.session_state["image_part"] = None
+    st.session_state["reask_clicked"] = False  # 重置这个控制变量
 
