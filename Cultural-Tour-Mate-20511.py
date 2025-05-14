@@ -168,33 +168,47 @@ with st.form("question_form", clear_on_submit=False):
 
     with cols[1]:
         # 用 st.markdown 或 st.write 添加空行，使按钮下移与输入框底部对齐
-        st.markdown("　")  # 
+        st.markdown("#### ")  # 
         submitted = st.form_submit_button(text["send"])
 
+# [生成回答]
 if submitted:
     if prompt and image_part:
         with st.spinner("Generating insight..." if lang_code == "en" else "正在思考，请稍候..."):
             model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
             language_prompt = "Please answer in English." if lang_code == "en" else "请用中文回答。"
+            
             image_input = {
                 "mime_type": image_part["mime_type"],
                 "data": image_part["data"]
             }
+
             response = model.generate_content([language_prompt, prompt, image_input])
             st.markdown("### " + text["response"])
             st.markdown(response.text)
             st.info(text["feedback"])
+            
+            # ✅ 设置为已生成
+            st.session_state["answer_generated"] = True
+            # ✅ 存储图片信息
+            st.session_state["image_part"] = image_part
+
     else:
         st.warning(text["warning_image_and_question"])
 
-# 初始化 session_state 变量
+# [初始化 session_state]
+st.session_state.setdefault("answer_generated", False)
 st.session_state.setdefault("prompt_input", "")
 st.session_state.setdefault("show_camera", False)
+st.session_state.setdefault("image_part", None)  # ✅ 可选添加，确保 image_part 安全引用
 
 # 重新提问按钮
 st.markdown("---")
-if st.button("🔄 " + ("Ask again" if lang_code == "en" else "重新提问")):
-    st.session_state["prompt_input"] = ""
-    st.session_state["show_camera"] = False
-    image_part = None
-    st.rerun()
+if st.session_state.get("answer_generated"):
+    if st.button("🔄 " + text["reask"]):
+        st.session_state["prompt_input"] = ""
+        st.session_state["show_camera"] = False
+        st.session_state["answer_generated"] = False  # 重置为未生成
+        image_part = None
+        st.rerun()
+
