@@ -211,14 +211,6 @@ if submitted:
             st.markdown(ai_bubble, unsafe_allow_html=True)
             st.info(text["feedback"])
 
-            # 清除输入框
-            if "prompt_input" in st.session_state:
-                st.session_state["prompt_input"] = ""
-            else:
-                st.session_state["prompt_input"] = ""
-            st.rerun()
-            st.session_state["answer_generated"] = True
-            st.session_state["image_part"] = image_part
     else:
         st.warning(text["text_unsendable"])
 
