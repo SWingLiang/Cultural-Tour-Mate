@@ -76,7 +76,7 @@ t = {
 
 # 语言选择
 lang_map = {"English": "en", "中文": "zh"}
-st.markdown("🌐Language / 语言")
+# st.markdown("🌐Language / 语言")
 lang_code = lang_map[st.radio("", list(lang_map.keys()), horizontal=True)]
 text = t[lang_code]
 
