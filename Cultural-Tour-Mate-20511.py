@@ -196,22 +196,7 @@ if submitted:
     else:
         st.warning(text["warning_image_and_question"])
 
-# [初始化 session_state]
-st.session_state.setdefault("reask_clicked", False)
-st.session_state.setdefault("answer_generated", False)
-st.session_state.setdefault("prompt_input", "")
-st.session_state.setdefault("show_camera", False)
-st.session_state.setdefault("image_part", None)  # ✅ 可选添加，确保 image_part 安全引用
+## 页面重载
 
 if st.button(text["reask"]):
-    # 先设置 session 中的标志变量，其他值等 rerun 后再重新设定
-    st.session_state["reask_clicked"] = True
     st.rerun()
-
-# 页面重载后处理
-if st.session_state.get("reask_clicked"):
-    st.session_state["prompt_input"] = ""
-    st.session_state["show_camera"] = False
-    st.session_state["answer_generated"] = False
-    st.session_state["image_part"] = None
-    st.session_state["reask_clicked"] = False  # 重置这个控制变量
