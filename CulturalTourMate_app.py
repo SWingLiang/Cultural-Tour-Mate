@@ -206,9 +206,15 @@ for message in reversed(st.session_state["messages"]):  # 首先反转整个列�
         st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
 
 # 提交后处理部分
+# 提交后处理部分
 if submitted:
     image_part = st.session_state.get("image_part")
+    
+    # 添加调试信息
     if prompt and image_part:
+        st.write(f"Prompt: {prompt}")  # 调试：显示输入的提示信息
+        st.write(f"Image Part Exists? {'Yes' if image_part else 'No'}")  # 调试：确认图像是否存在
+        
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
             try:
                 model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
@@ -224,7 +230,7 @@ if submitted:
                     del st.session_state["prompt_input"]
             except Exception as e:
                 st.error(text["api_error"])
-                st.exception(e)
+                st.exception(e)  # 打印完整的异常堆栈跟踪，便于调试
     else:
         st.warning(text["text_unsendable"])
 
