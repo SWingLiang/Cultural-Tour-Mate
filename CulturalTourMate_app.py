@@ -27,8 +27,8 @@ t = {
         "feedback": "🦄 Was this helpful? Feel free to ask more.",
         "developer": "Developer: Sin-Wing | Xianrong Liang ",
         "upload_note": "Select and upload an image from your device, the image is limited to 2 MB.",
-        "camera_note": "Notice: Some terminals might not convert the rear camera, suggest uploading photos. \n If the camera cannot be opened, please close it and try again.",
-        "input_placeholder": "Type what you want to learn about the image here",
+        "camera_note": "Notice: Some terminals might not convert the rear camera, suggest uploading photos. <br>If the camera cannot be opened, please close it and try again.",
+        "input_placeholder": "Type what you want to learn about the image here...",
         "user_role": "💬 Ask anything",
         "progress": "⏳ Please wait while I analyze your question and image...",
         "response_title": "💬 Cultural Insight",
@@ -49,8 +49,8 @@ t = {
         "upload": "🖼️ 上传图像",
         "camera": "📷 现场拍照",
         "camera_on": "📸 打开相机",
-        "camera_sub": "旅途中的文化困扰，请随手拍一张照片给我看看。",
-        "desc": "📝 描述您的疑问：",
+        "camera_sub": "旅途中的文化困扰，请随手拍一张照片发给我解读。",
+        "desc": "📝 描述疑问",
         "send": "🎈 发送",
         "response": "文化背景信息",
         "feedback": "🦄 这个回答有帮助吗？欢迎继续提问。",
@@ -127,6 +127,7 @@ image_part = None
 st.markdown("### " + text["camera"])
 st.markdown(text["camera_sub"])
 st.caption(text["camera_note"])
+st.caption(camera_note, unsafe_allow_html=True)
 
 if "show_camera" not in st.session_state:
     st.session_state["show_camera"] = False
