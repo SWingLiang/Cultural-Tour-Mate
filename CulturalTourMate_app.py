@@ -13,6 +13,9 @@ dotenv.load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 if os.getenv("GOOGLE_API_KEY") is None:
     st.error("❌ Google API Key not found. Please check .env file.")
+    st.stop()
+else:
+    genai.configure(api_key=api_key)
 
 # 多语言支持
 t = {
@@ -218,10 +221,9 @@ if submitted:
                 st.info(text["feedback"])
             except Exception as e:
                 st.error(text["api_error"])
+                st.exception(e)
     else:
         st.warning(text["text_unsendable"])
-
-
 
 # 重新提问按钮
 if st.session_state.get("answer_generated", False):
