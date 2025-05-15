@@ -165,6 +165,7 @@ if st.session_state["show_camera"]:
             img = Image.open(camera_img)
             st.session_state["image_part"] = {"mime_type": "image/jpeg", "data": compress_image(img)}
             st.image(img, caption=text["photo_captured"], use_container_width=True)
+            st.rerun()  # 强制刷新页面，确保 image_part 生效
 
 # 上传模块
 st.divider()
@@ -178,6 +179,7 @@ if upload_img:
         img = Image.open(upload_img)
         st.session_state["image_part"] = {"mime_type": "image/jpeg", "data": compress_image(img)}
         st.image(img, caption=text["photo_uploaded"], use_container_width=True)
+        st.rerun()  # 强制刷新页面，确保 image_part 生效
 
 # 输入与提问
 # 提问表单（支持回车键提交 + 语言提示）
@@ -194,7 +196,6 @@ with st.form("question_form", clear_on_submit=True):  # 这里设置True
         submitted = st.form_submit_button(text["send"])
         
 # 显示对话历史（倒序）
-# 显示对话历史（按时间顺序排列，最新消息在顶部）
 for message in reversed(st.session_state["messages"]):  # 首先反转整个列表以保证最新的消息最先处理
     if message["role"] != "system":  # 跳过系统消息
         bubble_style = (
@@ -206,6 +207,7 @@ for message in reversed(st.session_state["messages"]):  # 首先反转整个列�
 
 # 提交后处理部分
 if submitted:
+    image_part = st.session_state.get("image_part")
     if prompt and image_part:
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
             try:
