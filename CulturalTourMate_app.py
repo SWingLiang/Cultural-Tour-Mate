@@ -197,12 +197,6 @@ with st.form("question_form", clear_on_submit=False):
 # [生成回答]
 if submitted:
     if prompt and image_part:
-        # ... 处理逻辑 ...
-        st.session_state["prompt_input"] = ""  # 清空输入框
-    else:
-        st.warning(text["text_unsendable"])
-
-    if prompt and image_part:
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
             model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
             language_prompt = "Please answer in English." if lang_code == "en" else "请用中文回答。"
@@ -231,6 +225,7 @@ if submitted:
             st.info(text["feedback"])
             # 设置状态，允许显示“重新提问”按钮
         st.session_state["answer_generated"] = True
+        st.session_state["prompt_input"] = ""  # 清空输入框
     else:
         st.warning(text["text_unsendable"])
 
