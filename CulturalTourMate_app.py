@@ -75,7 +75,9 @@ t = {
 }
 
 # 语言选择 st.markdown("🌐Language / 语言")
-lang_code = {"English": "en", "中文": "zh"}[st.radio("", ["English", "中文"], horizontal=True)]
+col1, col2, col3 = st.columns([4, 1, 1])  # 调整比例让控件更靠右
+with col3:
+    lang_code = {"English": "en", "中文": "zh"}[st.radio("", ["English", "中文"], horizontal=True)]
 text = t[lang_code]
 
 # 页面头像装饰
