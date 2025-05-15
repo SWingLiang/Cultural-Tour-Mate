@@ -21,7 +21,7 @@ t = {
         "camera": "📷 Capture Photo",
         "camera_on": "📸 Open Camera",
         "camera_sub": "Any cultural troubles during the tour, please take a photo and ask me.",
-        "desc": "📝 Describe Matters",
+        "desc": "📝 Describe Trouble",
         "send": "🎈 Send",
         "response": "Cultural Insight",
         "feedback": "🦄 Was this helpful? Feel free to ask more.",
