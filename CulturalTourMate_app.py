@@ -11,6 +11,8 @@ st.set_page_config(page_title="Cultural-Tour-Mate", layout="centered")
 # 加载环境变量和 API Key
 dotenv.load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+if os.getenv("GOOGLE_API_KEY") is None:
+    st.error("❌ Google API Key not found. Please check .env file.")
 
 # 多语言支持
 t = {
@@ -206,17 +208,22 @@ image_part = st.session_state.get("image_part")
 if submitted:
     if prompt and st.session_state.get("image_part"):
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
-            # 生成代码略
-            st.session_state["messages"].append({"role": "user", "content": prompt})
-            st.session_state["messages"].append({"role": "assistant", "content": response_text})
-            st.session_state["answer_generated"] = True
-            st.info(text["feedback"])
-        # 手动清空输入框
-        st.session_state["prompt_input"] = ""
-        # 重新刷新页面显示更新后的内容
-        st.experimental_rerun()
+            try:
+                model = genai.GenerativeModel("gemini-pro-vision")
+                response = model.generate_content([
+                    prompt,
+                    st.session_state["image_part"]
+                ])
+                response_text = response.text
+                st.session_state["messages"].append({"role": "user", "content": prompt})
+                st.session_state["messages"].append({"role": "assistant", "content": response_text})
+                st.session_state["answer_generated"] = True
+                st.info(text["feedback"])
+            except Exception as e:
+                st.error(text["api_error"])
     else:
         st.warning(text["text_unsendable"])
+
 
 
 # 重新提问按钮
