@@ -27,7 +27,7 @@ t = {
         "feedback": "🦄 Was this helpful? Feel free to ask more.",
         "developer": "Developer: Sinwing | Xianrong Liang ",
         "upload_note": "Select and upload an image from your device, the image is limited to 2 MB.",
-        "camera_note": "Notice: Some terminals might not convert the rear camera. Suggest uploading photos. If the camera cannot be opened, please close it and try again.",
+        "camera_note": "Notice: Some terminals might not convert the rear camera, suggest uploading photos. <br>If the camera cannot be opened, please close it and try again.",
         "input_placeholder": "Type what you want to learn about the image here",
         "user_role": "💬 Ask anything",
         "progress": "⏳ Please wait while I analyze your question and image...",
