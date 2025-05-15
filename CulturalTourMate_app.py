@@ -195,9 +195,8 @@ with st.form("question_form", clear_on_submit=True):  # 这里设置True
         
 # 显示对话历史（倒序）
 for message in reversed(st.session_state["messages"]):
-    if message["role"] != "system":
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    role = message["role"]
+    content = message["content"]
     bubble_style = (
         "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
         if role == "user" 
