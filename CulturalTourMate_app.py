@@ -195,26 +195,27 @@ with st.form("question_form", clear_on_submit=True):  # 这里设置True
         
 # 显示对话历史（倒序）
 for message in reversed(st.session_state["messages"]):
-    role = message["role"]
-    content = message["content"]
-    bubble_style = (
-        "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
-        if role == "user" 
-        else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
-    )
-    st.markdown(f"<div style='{bubble_style}'>{content}</div>", unsafe_allow_html=True)
+    if message["role"] != "system":
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
 # 提交后处理部分
 image_part = st.session_state.get("image_part")
 if submitted:
-    if prompt and st.session_state.get("image_part"):
+    if prompt and image_part:
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
             try:
                 model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
-                response = model.generate_content([prompt, st.session_state["image_part"]])
+                response = model.generate_content([prompt, image_part])
                 response_text = response.text
+                # 添加到消息历史
                 st.session_state["messages"].append({"role": "user", "content": prompt})
                 st.session_state["messages"].append({"role": "assistant", "content": response_text})
+                # 即时显示回复
+                with st.chat_message("user"):
+                    st.markdown(prompt)
+                with st.chat_message("assistant"):
+                    st.markdown(response_text)
             except Exception as e:
                 st.error(text["api_error"])
                 st.exception(e)
@@ -237,6 +238,7 @@ if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
         # 重置上传图片数据
         st.session_state["image_part"] = None
         # 重置用户输入（可选，确保表单输入框为空）
-        st.session_state["prompt_input"] = ""
+        if "prompt_input" in st.session_state:
+            del st.session_state["prompt_input"]
         # 立即刷新页面
         st.rerun()
