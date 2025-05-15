@@ -220,8 +220,6 @@ if submitted:
                 st.exception(e)
     else:
         st.warning(text["text_unsendable"])
-    else:
-        st.warning(text["text_unsendable"])
 
 # 重新提问按钮
 if len(st.session_state["messages"]) > 1:
