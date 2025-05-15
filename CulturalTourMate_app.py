@@ -200,8 +200,8 @@ for message in reversed(st.session_state["messages"]):
             st.markdown(message["content"])
     bubble_style = (
         "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
-        if role == "user" else
-        "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
+        if role == "user" 
+        else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
     )
     st.markdown(f"<div style='{bubble_style}'>{content}</div>", unsafe_allow_html=True)
 
