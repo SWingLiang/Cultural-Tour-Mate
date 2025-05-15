@@ -196,8 +196,12 @@ with st.form("question_form", clear_on_submit=True):  # 这里设置True
 # 显示对话历史（倒序）
 for message in reversed(st.session_state["messages"]):
     if message["role"] != "system":
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+        bubble_style = (
+            "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
+            if message["role"] == "user" 
+            else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
+        )
+        st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
 
 # 提交后处理部分
 image_part = st.session_state.get("image_part")
@@ -208,14 +212,19 @@ if submitted:
                 model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
                 response = model.generate_content([prompt, image_part])
                 response_text = response.text
-                # 添加到消息历史
-                st.session_state["messages"].append({"role": "user", "content": prompt})
-                st.session_state["messages"].append({"role": "assistant", "content": response_text})
-                # 即时显示回复
-                with st.chat_message("user"):
-                    st.markdown(prompt)
-                with st.chat_message("assistant"):
-                    st.markdown(response_text)
+                # 添加到消息历史，并立即显示回复
+                new_messages = [
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": response_text}
+                ]
+                st.session_state["messages"].extend(new_messages)
+                for msg in new_messages:
+                    bubble_style = (
+                        "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
+                        if msg["role"] == "user"
+                        else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
+                    )
+                    st.markdown(f'<div style="{bubble_style}">{msg["content"]}</div>', unsafe_allow_html=True)
             except Exception as e:
                 st.error(text["api_error"])
                 st.exception(e)
@@ -230,13 +239,15 @@ if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
         st.session_state["messages"] = [
             {
                 "role": "system",
-                "content": "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..." 
-                if lang_code == "en" 
+                "content": "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..."
+                if lang_code == "en"
                 else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."
             }
         ]
         # 重置上传图片数据
         st.session_state["image_part"] = None
+        # 关闭相机视图
+        st.session_state["show_camera"] = False
         # 重置用户输入（可选，确保表单输入框为空）
         if "prompt_input" in st.session_state:
             del st.session_state["prompt_input"]
