@@ -222,8 +222,7 @@ if submitted:
         st.warning(text["text_unsendable"])
 
 # 重新提问按钮
-if len(st.session_state["messages"]) > 1:
-    if st.button(text["reask"]):
-        st.session_state["messages"] = [st.session_state["messages"][0]]  # 保留系统提示
-        st.session_state["image_part"] = None
-        st.experimental_rerun()
+if st.button(text["reask"]):
+    st.session_state["messages"] = [ {"role": "system", "content": "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..." if lang_code == "en" else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."}]
+    st.session_state["image_part"] = None
+    st.rerun()
