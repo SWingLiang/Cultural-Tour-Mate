@@ -74,6 +74,18 @@ t = {
     }
 }
 
+# 减少页面空白
+st.markdown("""
+    <style>
+        .block-container {
+            padding-top: 1rem;
+        }
+        header {
+            visibility: hidden;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # 语言选择 st.markdown("🌐Language / 语言")
 col1, col2 = st.columns([75, 25])
 with col2:
