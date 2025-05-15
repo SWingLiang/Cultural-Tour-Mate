@@ -76,7 +76,7 @@ t = {
     }
 }
 
-# 减少页面空白
+# 减少页眉空白
 st.markdown("""
     <style>
         .block-container {
@@ -124,6 +124,7 @@ st.divider()
 # 会话初始化
 if "messages" not in st.session_state:
     st.session_state["messages"] = [ {"role": "system", "content": "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..." if lang_code == "en" else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."}]
+
 
 # 图像压缩
 def compress_image(image, max_size=(800, 800), quality=80):
