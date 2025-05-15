@@ -13,9 +13,6 @@ dotenv.load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 if os.getenv("GOOGLE_API_KEY") is None:
     st.error("❌ Google API Key not found. Please check .env file.")
-    st.stop()
-else:
-    genai.configure(api_key=api_key)
 
 # 多语言支持
 t = {
