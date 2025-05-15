@@ -194,7 +194,18 @@ with st.form("question_form", clear_on_submit=False):
     with cols[1]:
         submitted = st.form_submit_button(text["send"])
         
-# [生成回答]
+# 显示聊天记录
+for message in st.session_state["messages"]:
+    role = message["role"]
+    content = message["content"]
+    bubble_style = (
+        "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
+        if role == "user" else
+        "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
+    )
+    st.markdown(f"<div style='{bubble_style}'>{content}</div>", unsafe_allow_html=True)
+
+# 提交后处理
 if submitted:
     if prompt and image_part:
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
@@ -212,21 +223,15 @@ if submitted:
             except Exception as e:
                 st.error(text["api_error"])
                 st.exception(e) 
-                
-            # 聊天气泡样式
-            user_bubble = f"""
-            <div style='text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;'>{prompt}</div>
-            """
-            ai_bubble = f"""
-            <div style='text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;'>{response.text}</div>
-            """
+           
             st.markdown(user_bubble, unsafe_allow_html=True)
             st.markdown(ai_bubble, unsafe_allow_html=True)
             st.info(text["feedback"])
             # 设置状态，允许显示“重新提问”按钮
-        st.session_state["prompt_input"] = ""  # 清空输入框
         st.session_state["answer_generated"] = True
-
+        st.session_state["messages"].append({"role": "user", "content": prompt})
+        st.session_state["messages"].append({"role": "assistant", "content": response_text})
+        st.session_state["prompt_input"] = ""  # 清空输入框
     else:
         st.warning(text["text_unsendable"])
 
