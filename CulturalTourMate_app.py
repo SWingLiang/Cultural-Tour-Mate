@@ -222,11 +222,7 @@ if submitted:
 # 重新提问按钮处理
 if st.session_state.get("answer_generated", False):
     if st.button(text["reask"]):
-        keys_to_clear = [
-            "prompt_input", "image_part", "answer_generated",
-            "show_camera"
-        ]
-        for key in keys_to_clear:
+        for key in ["prompt_input", "image_part", "answer_generated", "show_camera"]:
             if key in st.session_state:
-        del st.session_state[key]
+                del st.session_state[key]
         st.rerun()
