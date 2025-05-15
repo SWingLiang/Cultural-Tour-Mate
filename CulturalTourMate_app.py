@@ -19,7 +19,7 @@ t = {
         "slogan": "Your trustworthy, insightful, and articulate cultural companion in tour.",
         "upload": "🖼️ Upload Image",
         "camera": "📷 Capture Photo",
-        "camera_on": "📸 Take a shot",
+        "camera_on": "📸 Open Camera",
         "camera_sub": "Any cultural troubles during the tour, please take a photo and ask me.",
         "desc": "📝 Describe Matters",
         "send": "🎈 Send",
