@@ -235,6 +235,5 @@ if st.session_state.get("answer_generated", False):
         st.session_state["messages"] = [
             {"role": "system", "content": 
              "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..." 
-             if lang_code == "en" else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."}
-        ]
+             if lang_code == "en" else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."}]
         st.experimental_rerun()
