@@ -127,7 +127,7 @@ image_part = None
 st.markdown("### " + text["camera"])
 st.markdown(text["camera_sub"])
 st.caption(text["camera_note"])
-st.caption(camera_note, unsafe_allow_html=True)
+st.markdown(camera_note, unsafe_allow_html=True)
 
 if "show_camera" not in st.session_state:
     st.session_state["show_camera"] = False
