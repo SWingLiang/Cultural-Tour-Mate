@@ -183,14 +183,16 @@ if upload_img:
 st.divider()
 st.markdown("### " + text["desc"])
 st.markdown(text["input_placeholder"])
-with st.form("question_form", clear_on_submit=True):  # 设置为True
+
+# 清空输入框
+with st.form("question_form", clear_on_submit=True):  # 这里设置True
     cols = st.columns([5, 1])
     with cols[0]:
         prompt = st.text_input(label="### ", key="prompt_input", label_visibility="collapsed")
     with cols[1]:
         submitted = st.form_submit_button(text["send"])
         
-# 显示聊天记录，倒序排列（最新在上）
+# 显示对话历史（倒序）
 for message in reversed(st.session_state["messages"]):
     role = message.get("role", "")
     content = message.get("content", "")
@@ -231,8 +233,13 @@ if submitted:
 # 重新提问按钮
 if st.session_state.get("answer_generated", False):
     if st.button(text["reask"]):
-        keys_to_clear = ["prompt_input", "answer_generated", "show_camera"]
+        keys_to_clear = ["prompt_input", "image_part", "answer_generated", "show_camera"]
         for key in keys_to_clear:
             if key in st.session_state:
                 del st.session_state[key]
+        st.session_state["messages"] = [
+            {"role": "system", "content": 
+             "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..." 
+             if lang_code == "en" else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."}
+        ]
         st.experimental_rerun()
