@@ -194,8 +194,9 @@ with st.form("question_form", clear_on_submit=True):  # 这里设置True
         submitted = st.form_submit_button(text["send"])
         
 # 显示对话历史（倒序）
-for message in reversed(st.session_state["messages"]):
-    if message["role"] != "system":
+# 显示对话历史（按时间顺序排列，最新消息在顶部）
+for message in reversed(st.session_state["messages"]):  # 首先反转整个列表以保证最新的消息最先处理
+    if message["role"] != "system":  # 跳过系统消息
         bubble_style = (
             "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
             if message["role"] == "user" 
@@ -204,7 +205,6 @@ for message in reversed(st.session_state["messages"]):
         st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
 
 # 提交后处理部分
-image_part = st.session_state.get("image_part")
 if submitted:
     if prompt and image_part:
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
@@ -212,19 +212,14 @@ if submitted:
                 model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
                 response = model.generate_content([prompt, image_part])
                 response_text = response.text
-                # 添加到消息历史，并立即显示回复
-                new_messages = [
-                    {"role": "user", "content": prompt},
-                    {"role": "assistant", "content": response_text}
-                ]
-                st.session_state["messages"].extend(new_messages)
-                for msg in new_messages:
-                    bubble_style = (
-                        "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
-                        if msg["role"] == "user"
-                        else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
-                    )
-                    st.markdown(f'<div style="{bubble_style}">{msg["content"]}</div>', unsafe_allow_html=True)
+                
+                # 添加新的用户提问和AI回答到会话状态的开头
+                st.session_state["messages"].insert(1, {"role": "assistant", "content": response_text})
+                st.session_state["messages"].insert(1, {"role": "user", "content": prompt})
+                
+                # 清除输入框
+                if "prompt_input" in st.session_state:
+                    del st.session_state["prompt_input"]
             except Exception as e:
                 st.error(text["api_error"])
                 st.exception(e)
@@ -248,8 +243,5 @@ if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
         st.session_state["image_part"] = None
         # 关闭相机视图
         st.session_state["show_camera"] = False
-        # 重置用户输入（可选，确保表单输入框为空）
-        if "prompt_input" in st.session_state:
-            del st.session_state["prompt_input"]
         # 立即刷新页面
         st.rerun()
