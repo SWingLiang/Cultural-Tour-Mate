@@ -185,20 +185,23 @@ st.markdown("### " + text["desc"])
 st.markdown(text["input_placeholder"])
 with st.form("question_form", clear_on_submit=False):
     cols = st.columns([5, 1])
-
     with cols[0]:
         prompt = st.text_input(
-            label="### ",  # 实际不会显示
+            label="### ",
             key="prompt_input",
             label_visibility="collapsed"
         )
-
     with cols[1]:
-        # 用 st.markdown 或 st.write 添加空行，使按钮下移与输入框底部对齐 
         submitted = st.form_submit_button(text["send"])
-
+        
 # [生成回答]
 if submitted:
+    if prompt and image_part:
+        # ... 处理逻辑 ...
+        st.session_state["prompt_input"] = ""  # 清空输入框
+    else:
+        st.warning(text["text_unsendable"])
+
     if prompt and image_part:
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
             model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
