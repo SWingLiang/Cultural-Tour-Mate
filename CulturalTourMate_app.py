@@ -121,9 +121,8 @@ st.divider()
 
 # 会话初始化
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [
-        {"role": "system", "content": "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..." if lang_code == "en" else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."}
-    ]
+    st.session_state["messages"] = None
+        # [ {"role": "system", "content": "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..." if lang_code == "en" else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."}]
 
 # 图像压缩
 def compress_image(image, max_size=(800, 800), quality=80):
@@ -206,7 +205,7 @@ for message in reversed(st.session_state["messages"]):
 # 提交后处理部分
 image_part = st.session_state.get("image_part")
 if submitted:
-    if prompt and image_part:
+    if prompt and st.session_state.get("image_part"):
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
             # 生成代码略
             st.session_state["messages"].append({"role": "user", "content": prompt})
@@ -228,6 +227,8 @@ if st.session_state.get("answer_generated", False):
         for key in keys_to_clear:
             if key in st.session_state:
                 del st.session_state[key]
+            if "image_part" in st.session_state:
+                del st.session_state["image_part"]
         st.session_state["messages"] = [
             {"role": "system", "content": 
              "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..." 
