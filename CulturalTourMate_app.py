@@ -183,14 +183,10 @@ if upload_img:
 st.divider()
 st.markdown("### " + text["desc"])
 st.markdown(text["input_placeholder"])
-with st.form("question_form", clear_on_submit=False):
+with st.form("question_form", clear_on_submit=True):  # 设置为True
     cols = st.columns([5, 1])
     with cols[0]:
-        prompt = st.text_input(
-            label="### ",
-            key="prompt_input",
-            label_visibility="collapsed"
-        )
+        prompt = st.text_input(label="### ", key="prompt_input", label_visibility="collapsed")
     with cols[1]:
         submitted = st.form_submit_button(text["send"])
         
@@ -223,12 +219,7 @@ if submitted:
 
                 st.session_state["messages"].append({"role": "user", "content": prompt})
                 st.session_state["messages"].append({"role": "assistant", "content": response_text})
-
-                # 清空输入框
-                st.session_state["prompt_input"] = ""
-
                 st.session_state["answer_generated"] = True
-
                 st.info(text["feedback"])
 
             except Exception as e:
