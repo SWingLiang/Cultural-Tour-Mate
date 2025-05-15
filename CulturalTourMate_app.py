@@ -122,7 +122,7 @@ st.divider()
 # 会话初始化
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        {"role": "system", "content": "You are CulturalTourMate, a helpful and culturally knowledgeable travel assistant."}
+        {"role": "system", "content": "You are my CulturalTourMate, a helpful and culturally knowledgeable travel assistant."}
     ]
 
 # 图像压缩
@@ -205,7 +205,7 @@ for message in st.session_state["messages"]:
     )
     st.markdown(f"<div style='{bubble_style}'>{content}</div>", unsafe_allow_html=True)
 
-# 提交后处理
+# 提交后处理部分
 if submitted:
     if prompt and image_part:
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
@@ -221,22 +221,21 @@ if submitted:
                 response = model.generate_content([language_prompt, prompt, image_input])
                 response_text = response.text  # 获取文本回复
 
-                # 只更新会话状态，加入新消息
                 st.session_state["messages"].append({"role": "user", "content": prompt})
                 st.session_state["messages"].append({"role": "assistant", "content": response_text})
 
                 st.session_state["answer_generated"] = True
-                st.session_state["prompt_input"] = ""  # 清空输入框
+                # 这里清空输入框，建议用：
+                st.session_state["prompt_input"] = ""
 
                 st.info(text["feedback"])
-
-                # 注意：不需要这里再调用 st.markdown 显示新消息，页面刷新后历史消息循环会自动显示
 
             except Exception as e:
                 st.error(text["api_error"])
                 st.exception(e)
     else:
         st.warning(text["text_unsendable"])
+
 
 # 重新提问按钮处理
 if st.session_state.get("answer_generated", False):
