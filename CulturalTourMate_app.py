@@ -105,7 +105,7 @@ if avatar_url:
 st.title(text["title"])
 st.markdown(text["slogan"])
 st.caption(text["developer"])
-st.markdown("---")
+st.divider()
 
 # 会话初始化
 if "messages" not in st.session_state:
@@ -153,7 +153,7 @@ if st.session_state["show_camera"]:
             st.image(img, caption=text["photo_captured"], use_container_width=True)
 
 # 上传模块
-st.markdown("---")
+st.divider()
 st.markdown("### " + text["upload"])
 st.markdown(text["upload_note"])
 
@@ -168,7 +168,7 @@ if upload_img:
 
 # 输入与提问
 # 提问表单（支持回车键提交 + 语言提示）
-st.markdown("---")
+st.divider()
 st.markdown("### " + text["desc"])
 st.markdown(text["input_placeholder"])
 with st.form("question_form", clear_on_submit=False):
@@ -198,8 +198,12 @@ if submitted:
             }
 
             # 请求回复
-            response = model.generate_content([language_prompt, prompt, image_input])
-
+            try: 
+                response = model.generate_content([language_prompt, prompt, image_input])
+            except Exception as e:
+                st.error(text["api_error"])
+                st.exception(e) 
+                
             # 聊天气泡样式
             user_bubble = f"""
             <div style='text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;'>{prompt}</div>
@@ -210,7 +214,8 @@ if submitted:
             st.markdown(user_bubble, unsafe_allow_html=True)
             st.markdown(ai_bubble, unsafe_allow_html=True)
             st.info(text["feedback"])
-
+            # 设置状态，允许显示“重新提问”按钮
+            st.session_state["answer_generated"] = True
     else:
         st.warning(text["text_unsendable"])
 
@@ -223,6 +228,5 @@ if st.session_state.get("answer_generated", False):
         ]
         for key in keys_to_clear:
             if key in st.session_state:
-                del st.session_state[key]
+        del st.session_state[key]
         st.rerun()
-        
