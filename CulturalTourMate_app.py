@@ -194,11 +194,10 @@ with st.form("question_form", clear_on_submit=False):
     with cols[1]:
         submitted = st.form_submit_button(text["send"])
         
-# 显示聊天记录
+# 显示聊天记录（历史消息）
 for message in st.session_state["messages"]:
     role = message.get("role", "")
     content = message.get("content", "")
-    # 继续处理消息
     bubble_style = (
         "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
         if role == "user" else
@@ -218,21 +217,24 @@ if submitted:
                 "data": image_part["data"]
             }
 
-            # 请求回复
-            try: 
+            try:
                 response = model.generate_content([language_prompt, prompt, image_input])
+                response_text = response.text  # 获取文本回复
+
+                # 只更新会话状态，加入新消息
+                st.session_state["messages"].append({"role": "user", "content": prompt})
+                st.session_state["messages"].append({"role": "assistant", "content": response_text})
+
+                st.session_state["answer_generated"] = True
+                st.session_state["prompt_input"] = ""  # 清空输入框
+
+                st.info(text["feedback"])
+
+                # 注意：不需要这里再调用 st.markdown 显示新消息，页面刷新后历史消息循环会自动显示
+
             except Exception as e:
                 st.error(text["api_error"])
-                st.exception(e) 
-           
-            st.markdown(user_bubble, unsafe_allow_html=True)
-            st.markdown(ai_bubble, unsafe_allow_html=True)
-            st.info(text["feedback"])
-            # 设置状态，允许显示“重新提问”按钮
-        st.session_state["answer_generated"] = True
-        st.session_state["messages"].append({"role": "user", "content": prompt})
-        st.session_state["messages"].append({"role": "assistant", "content": response_text})
-        st.session_state["prompt_input"] = ""  # 清空输入框
+                st.exception(e)
     else:
         st.warning(text["text_unsendable"])
 
