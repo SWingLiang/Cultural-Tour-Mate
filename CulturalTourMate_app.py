@@ -25,7 +25,7 @@ t = {
         "send": "🎈 Send",
         "response": "Cultural Insight",
         "feedback": "🦄 Was this helpful? Feel free to ask more.",
-        "developer": "Developer: Sinwing | Xianrong Liang ",
+        "developer": "Developer: Sin-Wing | Xianrong Liang ",
         "upload_note": "Select and upload an image from your device, the image is limited to 2 MB.",
         "camera_note": "Notice: Some terminals might not convert the rear camera, suggest uploading photos. \n If the camera cannot be opened, please close it and try again.",
         "input_placeholder": "Type what you want to learn about the image here",
@@ -54,7 +54,7 @@ t = {
         "send": "🎈 发送",
         "response": "文化背景信息",
         "feedback": "🦄 这个回答有帮助吗？欢迎继续提问。",
-        "developer": "开发者：梁羡荣(Sinwing Leung)",
+        "developer": "开发者：梁羡荣(Leung, Sin-wing)",
         "upload_note": "从您的设备中选择并上传一张图片，大小不超2M。",
         "camera_note": "温馨提示：部分终端不支持转换后置摄像头，建议上传照片。若无法打开相机，请关闭相机重试",
         "input_placeholder": "请在文本框中描述您的问题...",
@@ -75,10 +75,10 @@ t = {
 }
 
 # 语言选择 st.markdown("🌐Language / 语言")
-col1, col2, col3 = st.columns([4, 1, 1])  # 调整比例让控件更靠右
-with col3:
+col1, col2 = st.columns([8, 2])
+with col2:
     lang_code = {"English": "en", "中文": "zh"}[st.radio("", ["English", "中文"], horizontal=True)]
-text = t[lang_code]
+    text = t[lang_code]
 
 # 页面头像装饰
 avatar_urls = {
