@@ -19,16 +19,16 @@ t = {
         "slogan": "Your trustworthy, insightful, and articulate cultural companion in tour.",
         "upload": "🖼️ Upload Image",
         "camera": "📷 Capture Photo",
-        "camera_on": "📸 Take a shot",
+        "camera_on": "📸 Open Camera",
         "camera_sub": "Any cultural troubles during the tour, please take a photo and ask me.",
-        "desc": "📝 Describe Matters",
+        "desc": "📝 Describe Trouble",
         "send": "🎈 Send",
         "response": "Cultural Insight",
         "feedback": "🦄 Was this helpful? Feel free to ask more.",
         "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
         "upload_note": "Select and upload an image from your device, the image is limited to 2 MB.",
-        "camera_note": "Due to limitations, rear camera might not be accessible on tablets. Try phone or upload a photo.",
-        "input_placeholder": "Type what you want to learn about the image here",
+        "camera_note": "Notice: If the camera cannot be opened, please close it and try again. Some terminals might not convert↔️ the rear camera, suggest uploading photos.",
+        "input_placeholder": "Type what you want to learn about the image here...",
         "user_role": "💬 Ask anything",
         "progress": "⏳ Please wait while I analyze your question and image...",
         "response_title": "💬 Cultural Insight",
@@ -49,14 +49,14 @@ t = {
         "upload": "🖼️ 上传图像",
         "camera": "📷 现场拍照",
         "camera_on": "📸 打开相机",
-        "camera_sub": "旅途中的文化困扰，请随手拍一张照片给我看看。",
-        "desc": "📝 描述您的疑问：",
+        "camera_sub": "旅途中的文化困扰，请随手拍张照片发我解读。",
+        "desc": "📝 描述疑问",
         "send": "🎈 发送",
         "response": "文化背景信息",
         "feedback": "🦄 这个回答有帮助吗？欢迎继续提问。",
-        "developer": "开发者：梁羡荣(Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh",
+        "developer": "开发团队：梁羡荣(Sinwing Leung); 阿布依·索尼(Abhay Soni), 萨彦·马吉德·法穆巴(Shayan Majid Phamba), 古尔佐特·辛格(Gurjot Singh)",
         "upload_note": "从您的设备中选择并上传一张图片，大小不超2M。",
-        "camera_note": "由于技术限制，部分平板不支持后置摄像头，建议使用手机或上传照片。",
+        "camera_note": "提示：若无法打开相机，请关闭相机重试；部分终端不能转换↔️后置摄像头，建议上传照片。",
         "input_placeholder": "请在文本框中描述您的问题...",
         "user_role": "💬 请您提问",
         "progress": "⏳ 请稍后，正在分析您的图像与问题...",
@@ -74,11 +74,23 @@ t = {
     }
 }
 
-# 语言选择 st.markdown("🌐Language / 语言")
-lang_map = {"English": "en", "中文": "zh"}
-lang_code = lang_map[st.radio("", list(lang_map.keys()), horizontal=True)]
-text = t[lang_code]
+# 减少页面空白
+st.markdown("""
+    <style>
+        .block-container {
+            padding-top: 0rem;
+        }
+        header {
+            visibility: hidden;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
+# 语言选择 st.markdown("🌐Language / 语言")
+col1, col2 = st.columns([75, 25])
+with col2:
+    lang_code = {"English": "en", "中文": "zh"}[st.radio("", ["English", "中文"], horizontal=True)]
+    text = t[lang_code]
 
 # 页面头像装饰
 avatar_urls = {
@@ -105,7 +117,7 @@ if avatar_url:
 st.title(text["title"])
 st.markdown(text["slogan"])
 st.caption(text["developer"])
-st.markdown("---")
+st.divider()
 
 # 会话初始化
 if "messages" not in st.session_state:
@@ -153,7 +165,7 @@ if st.session_state["show_camera"]:
             st.image(img, caption=text["photo_captured"], use_container_width=True)
 
 # 上传模块
-st.markdown("---")
+st.divider()
 st.markdown("### " + text["upload"])
 st.markdown(text["upload_note"])
 
@@ -168,7 +180,7 @@ if upload_img:
 
 # 输入与提问
 # 提问表单（支持回车键提交 + 语言提示）
-st.markdown("---")
+st.divider()
 st.markdown("### " + text["desc"])
 st.markdown(text["input_placeholder"])
 with st.form("question_form", clear_on_submit=False):
@@ -198,8 +210,12 @@ if submitted:
             }
 
             # 请求回复
-            response = model.generate_content([language_prompt, prompt, image_input])
-
+            try: 
+                response = model.generate_content([language_prompt, prompt, image_input])
+            except Exception as e:
+                st.error(text["api_error"])
+                st.exception(e) 
+                
             # 聊天气泡样式
             user_bubble = f"""
             <div style='text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;'>{prompt}</div>
@@ -210,19 +226,15 @@ if submitted:
             st.markdown(user_bubble, unsafe_allow_html=True)
             st.markdown(ai_bubble, unsafe_allow_html=True)
             st.info(text["feedback"])
-
+            # 设置状态，允许显示“重新提问”按钮
+        st.session_state["answer_generated"] = True
     else:
         st.warning(text["text_unsendable"])
 
 # 重新提问按钮处理
 if st.session_state.get("answer_generated", False):
     if st.button(text["reask"]):
-        keys_to_clear = [
-            "prompt_input", "image_part", "answer_generated",
-            "show_camera"
-        ]
-        for key in keys_to_clear:
+        for key in ["prompt_input", "image_part", "answer_generated", "show_camera"]:
             if key in st.session_state:
                 del st.session_state[key]
         st.rerun()
-
