@@ -204,16 +204,13 @@ for message in reversed(st.session_state["messages"]):
     st.markdown(f"<div style='{bubble_style}'>{content}</div>", unsafe_allow_html=True)
 
 # 提交后处理部分
-# image_part = st.session_state.get("image_part")
+image_part = st.session_state.get("image_part")
 if submitted:
     if prompt and st.session_state.get("image_part"):
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
             try:
-                model = genai.GenerativeModel("gemini-pro-vision")
-                response = model.generate_content([
-                    prompt,
-                    st.session_state["image_part"]
-                ])
+                model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
+                response = model.generate_content([prompt, st.session_state["image_part"]])
                 response_text = response.text
                 st.session_state["messages"].append({"role": "user", "content": prompt})
                 st.session_state["messages"].append({"role": "assistant", "content": response_text})
