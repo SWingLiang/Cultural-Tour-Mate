@@ -194,8 +194,8 @@ with st.form("question_form", clear_on_submit=False):
     with cols[1]:
         submitted = st.form_submit_button(text["send"])
         
-# 显示聊天记录（历史消息）
-for message in st.session_state["messages"]:
+# 显示聊天记录，倒序排列（最新在上）
+for message in reversed(st.session_state["messages"]):
     role = message.get("role", "")
     content = message.get("content", "")
     bubble_style = (
@@ -219,14 +219,15 @@ if submitted:
 
             try:
                 response = model.generate_content([language_prompt, prompt, image_input])
-                response_text = response.text  # 获取文本回复
+                response_text = response.text
 
                 st.session_state["messages"].append({"role": "user", "content": prompt})
                 st.session_state["messages"].append({"role": "assistant", "content": response_text})
 
+                # 清空输入框
+                st.session_state["prompt_input"] = ""
+
                 st.session_state["answer_generated"] = True
-                # 这里清空输入框，建议用：
-                # st.session_state["prompt_input"] = ""
 
                 st.info(text["feedback"])
 
@@ -236,11 +237,11 @@ if submitted:
     else:
         st.warning(text["text_unsendable"])
 
-
-# 重新提问按钮处理
+# 重新提问按钮
 if st.session_state.get("answer_generated", False):
     if st.button(text["reask"]):
-        for key in ["prompt_input", "image_part", "answer_generated", "show_camera"]:
+        keys_to_clear = ["prompt_input", "answer_generated", "show_camera"]
+        for key in keys_to_clear:
             if key in st.session_state:
                 del st.session_state[key]
-        st.rerun()
+        st.experimental_rerun()
