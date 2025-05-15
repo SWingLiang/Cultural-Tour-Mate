@@ -54,7 +54,7 @@ t = {
         "send": "🎈 发送",
         "response": "文化背景信息",
         "feedback": "🦄 这个回答有帮助吗？欢迎继续提问。",
-        "developer": "开发团队：梁羡荣(Sinwing Leung); 阿布依·索尼(Abhay Soni), 萨彦·马吉德·法穆巴(Shayan Majid Phamba), 古尔佐特·辛格(Gurjot Singh)",
+        "developer": "开发团队：梁羡荣(Sinwing Leung); 阿布依·索尼(Abhay Soni), 萨彦·马吉德(Shayan Majid), 古尔佐特·辛格(Gurjot Singh)",
         "upload_note": "从您的设备中选择并上传一张图片，大小不超2M。",
         "camera_note": "提示：若无法打开相机，请关闭相机重试；部分终端不能转换↔️后置摄像头，建议上传照片。",
         "input_placeholder": "请在文本框中描述您的问题...",
