@@ -226,7 +226,7 @@ if submitted:
 
                 st.session_state["answer_generated"] = True
                 # 这里清空输入框，建议用：
-                st.session_state["prompt_input"] = ""
+                # st.session_state["prompt_input"] = ""
 
                 st.info(text["feedback"])
 
