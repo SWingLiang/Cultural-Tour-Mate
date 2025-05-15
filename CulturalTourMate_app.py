@@ -215,12 +215,11 @@ if submitted:
                 response_text = response.text
                 st.session_state["messages"].append({"role": "user", "content": prompt})
                 st.session_state["messages"].append({"role": "assistant", "content": response_text})
-                st.session_state["answer_generated"] = True
-                st.session_state["image_part"] = None  # 清除已使用图片，防止重复使用
-                st.info(text["feedback"])
             except Exception as e:
                 st.error(text["api_error"])
                 st.exception(e)
+    else:
+        st.warning(text["text_unsendable"])
     else:
         st.warning(text["text_unsendable"])
 
