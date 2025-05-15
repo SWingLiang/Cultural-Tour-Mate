@@ -157,25 +157,25 @@ else:
 if st.session_state["show_camera"]:
     camera_img = st.camera_input("camera_capture")
     if camera_img:
+        # 处理压缩
         if len(camera_img.getvalue()) > 3 * 1024 * 1024:
             st.warning(text["oversize_error"])
         else:
             img = Image.open(camera_img)
-            image_part = {"mime_type": "image/jpeg", "data": compress_image(img)}
+            st.session_state["image_part"] = {"mime_type": "image/jpeg", "data": compress_image(img)}
             st.image(img, caption=text["photo_captured"], use_container_width=True)
 
 # 上传模块
 st.divider()
 st.markdown("### " + text["upload"])
 st.markdown(text["upload_note"])
-
 upload_img = st.file_uploader(label="", type=["jpg", "jpeg", "png", "webp"])
 if upload_img:
     if upload_img.size > 3 * 1024 * 1024:
         st.warning(text["oversize_error"])
     else:
         img = Image.open(upload_img)
-        image_part = {"mime_type": "image/jpeg", "data": compress_image(img)}
+        st.session_state["image_part"] = {"mime_type": "image/jpeg", "data": compress_image(img)}
         st.image(img, caption=text["photo_uploaded"], use_container_width=True)
 
 # 输入与提问
@@ -207,28 +207,18 @@ for message in reversed(st.session_state["messages"]):
 if submitted:
     if prompt and image_part:
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
-            model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
-            language_prompt = "Please answer in English." if lang_code == "en" else "请用中文回答。"
-
-            image_input = {
-                "mime_type": image_part["mime_type"],
-                "data": image_part["data"]
-            }
-
-            try:
-                response = model.generate_content([language_prompt, prompt, image_input])
-                response_text = response.text
-
-                st.session_state["messages"].append({"role": "user", "content": prompt})
-                st.session_state["messages"].append({"role": "assistant", "content": response_text})
-                st.session_state["answer_generated"] = True
-                st.info(text["feedback"])
-
-            except Exception as e:
-                st.error(text["api_error"])
-                st.exception(e)
+            # 生成代码略
+            st.session_state["messages"].append({"role": "user", "content": prompt})
+            st.session_state["messages"].append({"role": "assistant", "content": response_text})
+            st.session_state["answer_generated"] = True
+            st.info(text["feedback"])
+        # 手动清空输入框
+        st.session_state["prompt_input"] = ""
+        # 重新刷新页面显示更新后的内容
+        st.experimental_rerun()
     else:
         st.warning(text["text_unsendable"])
+
 
 # 重新提问按钮
 if st.session_state.get("answer_generated", False):
