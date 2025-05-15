@@ -122,7 +122,7 @@ st.divider()
 # 会话初始化
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        {"role": "system", "parts": "system prompt: You are CulturalTourMate, a helpful and culturally knowledgeable travel assistant."}
+        {"role": "system", "content": "You are CulturalTourMate, a helpful and culturally knowledgeable travel assistant."}
     ]
 
 # 图像压缩
@@ -196,8 +196,9 @@ with st.form("question_form", clear_on_submit=False):
         
 # 显示聊天记录
 for message in st.session_state["messages"]:
-    role = message["role"]
-    content = message["content"]
+    role = message.get("role", "")
+    content = message.get("content", "")
+    # 继续处理消息
     bubble_style = (
         "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
         if role == "user" else
