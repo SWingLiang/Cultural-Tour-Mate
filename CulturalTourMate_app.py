@@ -122,7 +122,7 @@ st.divider()
 # 会话初始化
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        {"role": "system", "content": "You are my CulturalTourMate, a helpful and culturally knowledgeable travel assistant."}
+        {"role": "system", "content": "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant." if lang_code == "en" else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."}
     ]
 
 # 图像压缩
