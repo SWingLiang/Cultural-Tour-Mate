@@ -216,6 +216,7 @@ if submitted:
                 st.session_state["messages"].append({"role": "user", "content": prompt})
                 st.session_state["messages"].append({"role": "assistant", "content": response_text})
                 st.session_state["answer_generated"] = True
+                st.session_state["image_part"] = None  # 清除已使用图片，防止重复使用
                 st.info(text["feedback"])
             except Exception as e:
                 st.error(text["api_error"])
@@ -224,16 +225,8 @@ if submitted:
         st.warning(text["text_unsendable"])
 
 # 重新提问按钮
-if st.session_state.get("answer_generated", False):
+if len(st.session_state["messages"]) > 1:
     if st.button(text["reask"]):
-        keys_to_clear = ["prompt_input", "image_part", "answer_generated", "show_camera"]
-        for key in keys_to_clear:
-            if key in st.session_state:
-                del st.session_state[key]
-            if "image_part" in st.session_state:
-                del st.session_state["image_part"]
-        st.session_state["messages"] = [
-            {"role": "system", "content": 
-             "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..." 
-             if lang_code == "en" else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."}]
+        st.session_state["messages"] = [st.session_state["messages"][0]]  # 保留系统提示
+        st.session_state["image_part"] = None
         st.experimental_rerun()
