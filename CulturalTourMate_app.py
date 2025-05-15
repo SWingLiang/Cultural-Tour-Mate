@@ -73,6 +73,7 @@ t = {
         "text_unsendable": "⚠️ 发消息前请拍照或上传一张图片。"
     }
 }
+st.markdown(camera_note, unsafe_allow_html=True)
 
 # 语言选择 st.markdown("🌐Language / 语言")
 col1, col2 = st.columns([75, 25])
@@ -127,7 +128,6 @@ image_part = None
 st.markdown("### " + text["camera"])
 st.markdown(text["camera_sub"])
 st.caption(text["camera_note"])
-st.markdown(camera_note, unsafe_allow_html=True)
 
 if "show_camera" not in st.session_state:
     st.session_state["show_camera"] = False
