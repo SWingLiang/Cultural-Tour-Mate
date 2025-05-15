@@ -215,7 +215,7 @@ if submitted:
             st.markdown(ai_bubble, unsafe_allow_html=True)
             st.info(text["feedback"])
             # 设置状态，允许显示“重新提问”按钮
-            st.session_state["answer_generated"] = True
+        st.session_state["answer_generated"] = True
     else:
         st.warning(text["text_unsendable"])
 
