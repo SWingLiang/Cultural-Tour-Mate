@@ -204,7 +204,7 @@ if submitted:
                 response = model.generate_content([prompt, image_part])
                 response_text = response.text
                 
-                # 添加到消息历史，并立即显示回复
+                # 添加到消息历史
                 new_messages = [
                     {"role": "user", "content": prompt},
                     {"role": "assistant", "content": response_text}
@@ -214,9 +214,6 @@ if submitted:
             except Exception as e:
                 st.error(text["api_error"])
                 st.exception(e)
-
-        # 重新渲染整个对话历史，确保最新的对话显示在最上面
-        st.experimental_rerun()  # 强制刷新页面，确保对话历史按照预期顺序显示
 
     else:
         st.warning(text["text_unsendable"])
@@ -238,18 +235,18 @@ if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
     if chat_pairs:
         # 最新的一组问答显示在最上面
         user_msg, assistant_msg = chat_pairs[-1]
-        
-        # 用户提问
-        st.markdown(f"""
-            <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
-                {user_msg["content"]}
-            </div>
-        """, unsafe_allow_html=True)
 
         # AI 回答
         st.markdown(f"""
             <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
                 {assistant_msg["content"]}
+            </div>
+        """, unsafe_allow_html=True)
+
+        # 用户提问
+        st.markdown(f"""
+            <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
+                {user_msg["content"]}
             </div>
         """, unsafe_allow_html=True)
 
