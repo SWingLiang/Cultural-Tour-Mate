@@ -194,23 +194,8 @@ with st.form("question_form"):  # 移除了 clear_on_submit=True
         prompt = st.text_input(label="### ", key="prompt_input", label_visibility="collapsed")
     with cols[1]:
         submitted = st.form_submit_button(text["send"])
-        
-    if submitted:
-        st.write(f"Prompt: {prompt}")  # 调试信息
-        image_part = st.session_state.get("image_part")
-        st.write(f"Image Part Available: {bool(image_part)}")  // 调试信息
-        
-# 显示对话历史（倒序）
-for message in reversed(st.session_state["messages"]):  # 首先反转整个列表以保证最新的消息最先处理
-    if message["role"] != "system":  # 跳过系统消息
-        bubble_style = (
-            "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
-            if message["role"] == "user" 
-            else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
-        )
-        st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
 
-# 提交后处理部分
+# 提交后处理部分 应该放在 显示对话历史之前
 if submitted:
     image_part = st.session_state.get("image_part")
     if prompt and image_part:
@@ -224,14 +209,23 @@ if submitted:
                 st.session_state["messages"].insert(1, {"role": "assistant", "content": response_text})
                 st.session_state["messages"].insert(1, {"role": "user", "content": prompt})
                 
-                # 清除输入框
-                if "prompt_input" in st.session_state:
-                    del st.session_state["prompt_input"]
+                # 可选择在这里手动清除输入框内容
+                st.session_state["prompt_input"] = ""
             except Exception as e:
                 st.error(text["api_error"])
                 st.exception(e)
     else:
         st.warning(text["text_unsendable"])
+
+# 显示对话历史（倒序）
+for message in reversed(st.session_state["messages"]):  # 首先反转整个列表以保证最新的消息最先处理
+    if message["role"] != "system":  # 跳过系统消息
+        bubble_style = (
+            "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
+            if message["role"] == "user" 
+            else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
+        )
+        st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
 
 # 添加“重新提问”按钮（Reask）
 if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
