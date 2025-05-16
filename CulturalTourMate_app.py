@@ -193,7 +193,7 @@ with st.form("question_form", clear_on_submit=True):  # 这里设置True
     with cols[1]:
         submitted = st.form_submit_button(text["send"])
         
-# 显示对话历史（最新的对话在最上面，并用 st.divider() 分隔）
+# 显示对话历史
 if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
     st.markdown("### " + text["response_title"])
 
@@ -207,24 +207,36 @@ if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
             chat_pairs.append((messages[i], messages[i + 1]))
 
     # 反转整个列表，让最新的对话在最上面
-    for idx, (user_msg, assistant_msg) in enumerate(reversed(chat_pairs)):
+    if chat_pairs:
+        # 最新的一组问答显示在最上面
+        user_msg, assistant_msg = chat_pairs[-1]
+
         # AI 回答
         st.markdown(f"""
-            <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
-                {assistant_msg["content"]}
-            </div>
-        """, unsafe_allow_html=True)
+            <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"> {assistant_msg["content"]} </div> """, unsafe_allow_html=True)
 
         # 用户提问
-        st.markdown(f"""
-            <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
-                {user_msg["content"]}
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f""" <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"> {user_msg["content"]} </div> """, unsafe_allow_html=True)
 
-        # 如果不是最后一个对话，则添加分隔线
-        if idx < len(chat_pairs) - 1:
+        # 如果还有更多的历史对话，则添加一个分割线
+        if len(chat_pairs) > 1:
             st.divider()
+
+        # 剩下的历史对话按照从旧到新的顺序显示
+        for user_msg, assistant_msg in reversed(chat_pairs[:-1]):
+            # 用户提问
+            st.markdown(f"""
+                <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
+                    {user_msg["content"]}
+                </div>
+            """, unsafe_allow_html=True)
+
+            # AI 回答
+            st.markdown(f"""
+                <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
+                    {assistant_msg["content"]}
+                </div>
+            """, unsafe_allow_html=True)
             
 # 提交后处理部分
 image_part = st.session_state.get("image_part")
