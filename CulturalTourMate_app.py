@@ -225,9 +225,14 @@ if submitted:
                         else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
                     )
                     st.markdown(f'<div style="{bubble_style}">{msg["content"]}</div>', unsafe_allow_html=True)
+            except Exception as e:
+                st.error(text["api_error"])
+                st.exception(e)
+    else:
+        st.warning(text["text_unsendable"])
 
 # 显示对话历史（无需再使用reversed）
-for message in st.session_state.reversed["messages"]:
+for message in st.session_state["messages"]:
     if message["role"] != "system":
         bubble_style = (
             "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
@@ -235,11 +240,6 @@ for message in st.session_state.reversed["messages"]:
             else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
         )
         st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
-            except Exception as e:
-                st.error(text["api_error"])
-                st.exception(e)
-    else:
-        st.warning(text["text_unsendable"])
 
 # 添加“重新提问”按钮（Reask）
 if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
