@@ -237,18 +237,10 @@ if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
         user_msg, assistant_msg = chat_pairs[-1]
         
         # 用户提问
-        st.markdown(f"""
-            <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
-                {user_msg["content"]}
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f""" <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"> {user_msg["content"]} </div> """, unsafe_allow_html=True)
         
         # AI 回答
-        st.markdown(f"""
-            <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
-                {assistant_msg["content"]}
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f""" <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"> {assistant_msg["content"]} </div> """, unsafe_allow_html=True)
 
         # 如果还有更多的历史对话，则添加一个分割线
         if len(chat_pairs) > 1:
@@ -256,19 +248,11 @@ if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
 
         # 剩下的历史对话按照从旧到新的顺序显示
         for user_msg, assistant_msg in reversed(chat_pairs[:-1]):
-            # 用户提问
-            st.markdown(f"""
-                <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
-                    {user_msg["content"]}
-                </div>
-            """, unsafe_allow_html=True)
-
-            # AI 回答
-            st.markdown(f"""
-                <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
-                    {assistant_msg["content"]}
-                </div>
-            """, unsafe_allow_html=True)
+        # 用户提问
+        st.markdown(f""" <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"> {user_msg["content"]} </div> """, unsafe_allow_html=True)
+        
+        # AI 回答
+        st.markdown(f""" <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"> {assistant_msg["content"]} </div> """, unsafe_allow_html=True)
 
 # 添加“重新提问”按钮（Reask）
 if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
