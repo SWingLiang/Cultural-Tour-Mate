@@ -226,8 +226,6 @@ if submitted:
                         else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
                     )
                     st.markdown(f'<div style="{bubble_style}">{msg["content"]}</div>', unsafe_allow_html=True)
-    else:
-        st.warning(text["text_unsendable"])
 
 # 显示对话历史（无需再使用reversed）
 for message in st.session_state["messages"]:
