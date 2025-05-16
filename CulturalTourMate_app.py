@@ -206,31 +206,45 @@ for message in reversed(st.session_state["messages"]):  # 首先反转整个列�
         st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
 
 # 提交后处理部分
+
+# [生成回答]
 if submitted:
-    st.write("Form Submitted!")  // 调试信息
-    image_part = st.session_state.get("image_part")
-    st.write(f"Image Part: {bool(image_part)}")  // 调试信息
-    # 添加调试信息
     if prompt and image_part:
-        st.write(f"Prompt: {prompt}")  # 调试：显示输入的提示信息
-        st.write(f"Image Part Exists? {'Yes' if image_part else 'No'}")  # 调试：确认图像是否存在
-        
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
-            try:
-                model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
-                response = model.generate_content([prompt, image_part])
-                response_text = response.text
-                
-                # 添加新的用户提问和AI回答到会话状态的开头
-                st.session_state["messages"].insert(1, {"role": "assistant", "content": response_text})
-                st.session_state["messages"].insert(1, {"role": "user", "content": prompt})
-                
-                # 清除输入框
-                if "prompt_input" in st.session_state:
-                    del st.session_state["prompt_input"]
+            model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
+            language_prompt = "Please answer in English." if lang_code == "en" else "请用中文回答。"
+
+            image_input = {
+                "mime_type": image_part["mime_type"],
+                "data": image_part["data"]
+            }
+
+            # 请求回复
+            try: 
+                response = model.generate_content([language_prompt, prompt, image_input])
             except Exception as e:
                 st.error(text["api_error"])
-                st.exception(e)  # 打印完整的异常堆栈跟踪，便于调试
+                st.exception(e) 
+                
     else:
         st.warning(text["text_unsendable"])
-
+        
+# 添加“重新提问”按钮（Reask）
+if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
+    st.divider()
+    if st.button(text["reask"]):
+        # 重置消息列表，仅保留系统提示
+        st.session_state["messages"] = [
+            {
+                "role": "system",
+                "content": "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..."
+                if lang_code == "en"
+                else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."
+            }
+        ]
+        # 重置上传图片数据
+        st.session_state["image_part"] = None
+        # 关闭相机视图
+        st.session_state["show_camera"] = False
+        # 立即刷新页面
+        st.rerun()
