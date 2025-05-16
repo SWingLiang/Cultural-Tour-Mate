@@ -226,9 +226,6 @@ if submitted:
                         else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
                     )
                     st.markdown(f'<div style="{bubble_style}">{msg["content"]}</div>', unsafe_allow_html=True)
-            except Exception as e:
-                st.error(text["api_error"])
-                st.exception(e)
     else:
         st.warning(text["text_unsendable"])
 
