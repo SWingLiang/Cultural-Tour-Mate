@@ -225,7 +225,15 @@ if submitted:
                     {"role": "assistant", "content": response_text}
                 ]
                 st.session_state["messages"].extend(new_messages)
-###
+                
+                for msg in new_messages:
+                    bubble_style = (
+                        "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
+                        if msg["role"] == "user"
+                        else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
+                    )
+                    st.markdown(f'<div style="{bubble_style}">{msg["content"]}</div>', unsafe_allow_html=True)
+                    
             except Exception as e:
                 st.error(text["api_error"])
                 st.exception(e)
