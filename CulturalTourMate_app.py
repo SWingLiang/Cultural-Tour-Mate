@@ -187,14 +187,6 @@ st.divider()
 st.markdown("### " + text["desc"])
 st.markdown(text["input_placeholder"])
 
-# 清空输入框
-with st.form("question_form"):  # 移除了 clear_on_submit=True
-    cols = st.columns([5, 1])
-    with cols[0]:
-        prompt = st.text_input(label="### ", key="prompt_input", label_visibility="collapsed")
-    with cols[1]:
-        submitted = st.form_submit_button(text["send"])
-
 # 提交后处理部分 应该放在 显示对话历史之前
 if submitted:
     image_part = st.session_state.get("image_part")
@@ -216,6 +208,14 @@ if submitted:
                 st.exception(e)
     else:
         st.warning(text["text_unsendable"])
+
+# 清空输入框
+with st.form("question_form"): 
+    cols = st.columns([5, 1])
+    with cols[0]:
+        prompt = st.text_input(label="### ", key="prompt_input", label_visibility="collapsed")
+    with cols[1]:
+        submitted = st.form_submit_button(text["send"])
 
 # 显示对话历史（倒序）
 for message in reversed(st.session_state["messages"]):  # 首先反转整个列表以保证最新的消息最先处理
