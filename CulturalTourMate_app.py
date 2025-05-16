@@ -187,6 +187,18 @@ st.divider()
 st.markdown("### " + text["desc"])
 st.markdown(text["input_placeholder"])
 
+# 清空输入框
+with st.form("question_form"):  # 移除了 clear_on_submit=True
+    cols = st.columns([5, 1])
+    with cols[0]:
+        prompt = st.text_input(label="### ", key="prompt_input", label_visibility="collapsed")
+    with cols[1]:
+        submitted = st.form_submit_button(text["send"])
+        
+    if submitted:
+        st.write(f"Prompt: {prompt}")  # 调试信息
+        image_part = st.session_state.get("image_part")
+        st.write(f"Image Part Available: {bool(image_part)}")  // 调试信息
         
 # 显示对话历史（倒序）
 for message in reversed(st.session_state["messages"]):  # 首先反转整个列表以保证最新的消息最先处理
@@ -199,29 +211,28 @@ for message in reversed(st.session_state["messages"]):  # 首先反转整个列�
         st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
 
 # 提交后处理部分
-
-# [生成回答]
 if submitted:
+    image_part = st.session_state.get("image_part")
     if prompt and image_part:
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
-            model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
-            language_prompt = "Please answer in English." if lang_code == "en" else "请用中文回答。"
-
-            image_input = {
-                "mime_type": image_part["mime_type"],
-                "data": image_part["data"]
-            }
-
-            # 请求回复
-            try: 
-                response = model.generate_content([language_prompt, prompt, image_input])
+            try:
+                model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
+                response = model.generate_content([prompt, image_part])
+                response_text = response.text
+                
+                # 添加新的用户提问和AI回答到会话状态的开头
+                st.session_state["messages"].insert(1, {"role": "assistant", "content": response_text})
+                st.session_state["messages"].insert(1, {"role": "user", "content": prompt})
+                
+                # 清除输入框
+                if "prompt_input" in st.session_state:
+                    del st.session_state["prompt_input"]
             except Exception as e:
                 st.error(text["api_error"])
-                st.exception(e) 
-                
+                st.exception(e)
     else:
         st.warning(text["text_unsendable"])
-        
+
 # 添加“重新提问”按钮（Reask）
 if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
     st.divider()
