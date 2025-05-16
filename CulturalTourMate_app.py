@@ -206,10 +206,8 @@ for message in reversed(st.session_state["messages"]):  # 首先反转整个列�
         st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
 
 # 提交后处理部分
-# 提交后处理部分
 if submitted:
     image_part = st.session_state.get("image_part")
-    
     # 添加调试信息
     if prompt and image_part:
         st.write(f"Prompt: {prompt}")  # 调试：显示输入的提示信息
