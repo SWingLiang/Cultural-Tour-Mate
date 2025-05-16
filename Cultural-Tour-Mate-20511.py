@@ -74,7 +74,7 @@ t = {
     }
 }
 
-# 减少页面空白
+# 减少页眉空白
 st.markdown("""
     <style>
         .block-container {
@@ -121,9 +121,8 @@ st.divider()
 
 # 会话初始化
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [
-        {"role": "system", "parts": "system prompt: You are CulturalTourMate, a helpful and culturally knowledgeable travel assistant."}
-    ]
+    st.session_state["messages"] = [ {"role": "system", "content": "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..." if lang_code == "en" else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."}]
+
 
 # 图像压缩
 def compress_image(image, max_size=(800, 800), quality=80):
@@ -157,25 +156,25 @@ else:
 if st.session_state["show_camera"]:
     camera_img = st.camera_input("camera_capture")
     if camera_img:
+        # 处理压缩
         if len(camera_img.getvalue()) > 3 * 1024 * 1024:
             st.warning(text["oversize_error"])
         else:
             img = Image.open(camera_img)
-            image_part = {"mime_type": "image/jpeg", "data": compress_image(img)}
+            st.session_state["image_part"] = {"mime_type": "image/jpeg", "data": compress_image(img)}
             st.image(img, caption=text["photo_captured"], use_container_width=True)
 
 # 上传模块
 st.divider()
 st.markdown("### " + text["upload"])
 st.markdown(text["upload_note"])
-
 upload_img = st.file_uploader(label="", type=["jpg", "jpeg", "png", "webp"])
 if upload_img:
     if upload_img.size > 3 * 1024 * 1024:
         st.warning(text["oversize_error"])
     else:
         img = Image.open(upload_img)
-        image_part = {"mime_type": "image/jpeg", "data": compress_image(img)}
+        st.session_state["image_part"] = {"mime_type": "image/jpeg", "data": compress_image(img)}
         st.image(img, caption=text["photo_uploaded"], use_container_width=True)
 
 # 输入与提问
@@ -185,56 +184,94 @@ st.markdown("### " + text["desc"])
 st.markdown(text["input_placeholder"])
 
 # 清空输入框
-with st.form("question_form"):  # 移除了 clear_on_submit=True
+with st.form("question_form", clear_on_submit=True):  # 这里设置True
     cols = st.columns([5, 1])
     with cols[0]:
         prompt = st.text_input(label="### ", key="prompt_input", label_visibility="collapsed")
     with cols[1]:
         submitted = st.form_submit_button(text["send"])
         
-    if submitted:
-        st.write(f"Prompt: {prompt}")  # 调试信息
-        image_part = st.session_state.get("image_part")
-        st.write(f"Image Part Available: {bool(image_part)}")  // 调试信息
-
-# [生成回答]
+# 提交后处理部分
+image_part = st.session_state.get("image_part")
 if submitted:
     if prompt and image_part:
+        # 在处理新消息前显示spinner
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
-            model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
-            language_prompt = "Please answer in English." if lang_code == "en" else "请用中文回答。"
-
-            image_input = {
-                "mime_type": image_part["mime_type"],
-                "data": image_part["data"]
-            }
-
-            # 请求回复
-            try: 
-                response = model.generate_content([language_prompt, prompt, image_input])
+            try:
+                model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
+                response = model.generate_content([prompt, image_part])
+                response_text = response.text
+                
+                # 添加到消息历史
+                new_messages = [
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": response_text}
+                ]
+                st.session_state["messages"].extend(new_messages)
+                
             except Exception as e:
                 st.error(text["api_error"])
-                st.exception(e) 
-                
-            # 聊天气泡样式
-            user_bubble = f"""
-            <div style='text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;'>{prompt}</div>
-            """
-            ai_bubble = f"""
-            <div style='text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;'>{response.text}</div>
-            """
-            st.markdown(user_bubble, unsafe_allow_html=True)
-            st.markdown(ai_bubble, unsafe_allow_html=True)
-            st.info(text["feedback"])
-            # 设置状态，允许显示“重新提问”按钮
-        st.session_state["answer_generated"] = True
+                st.exception(e)
+
     else:
         st.warning(text["text_unsendable"])
 
-# 重新提问按钮处理
-if st.session_state.get("answer_generated", False):
+# 显示对话历史（最新的对话在最上面，并用st.divider()分隔）
+if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
+    st.markdown("### " + text["response_title"])
+
+    # 提取所有 user 和 assistant 的消息
+    chat_pairs = []
+    messages = [m for m in st.session_state["messages"] if m["role"] in ("user", "assistant")]
+
+    # 按照两个一组打包成对话对（user -> assistant）
+    for i in range(0, len(messages) - 1, 2):
+        if i + 1 < len(messages):
+            chat_pairs.append((messages[i], messages[i + 1]))
+
+    # 反转整个列表，让最新的对话在最上面
+    if chat_pairs:
+        # 最新的一组问答显示在最上面
+        user_msg, assistant_msg = chat_pairs[-1]
+        
+        # 用户提问
+        st.markdown(f""" <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"> {user_msg["content"]} </div> """, unsafe_allow_html=True)
+        
+        # AI 回答
+        st.markdown(f""" <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"> {assistant_msg["content"]} </div> """, unsafe_allow_html=True)
+
+        # 如果还有更多的历史对话，则添加一个分割线
+        if len(chat_pairs) > 1:
+            st.divider()
+
+        # 剩下的历史对话按照从旧到新的顺序显示
+        for user_msg, assistant_msg in reversed(chat_pairs[:-1]):
+        
+            # 用户提问
+            st.markdown(f""" <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"> {user_msg["content"]} </div> """, unsafe_allow_html=True)
+            
+            # AI 回答
+            st.markdown(f""" <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"> {assistant_msg["content"]} </div> """, unsafe_allow_html=True)
+
+# 添加“重新提问”按钮（Reask）
+if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
+    st.divider()
     if st.button(text["reask"]):
-        for key in ["prompt_input", "image_part", "answer_generated", "show_camera"]:
-            if key in st.session_state:
-                del st.session_state[key]
+        # 重置消息列表，仅保留系统提示
+        st.session_state["messages"] = [
+            {
+                "role": "system",
+                "content": "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..."
+                if lang_code == "en"
+                else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."
+            }
+        ]
+        # 重置上传图片数据
+        st.session_state["image_part"] = None
+        # 关闭相机视图
+        st.session_state["show_camera"] = False
+        # 重置用户输入（可选，确保表单输入框为空）
+        if "prompt_input" in st.session_state:
+            del st.session_state["prompt_input"]
+        # 立即刷新页面
         st.rerun()
