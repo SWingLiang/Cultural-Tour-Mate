@@ -193,7 +193,35 @@ with st.form("question_form", clear_on_submit=True):  # 这里设置True
     with cols[1]:
         submitted = st.form_submit_button(text["send"])
         
-# 显示对话历史
+# 提交后处理部分
+image_part = st.session_state.get("image_part")
+if submitted:
+    if prompt and image_part:
+        # 在处理新消息前显示spinner
+        with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
+            try:
+                model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
+                response = model.generate_content([prompt, image_part])
+                response_text = response.text
+                
+                # 添加到消息历史，并立即显示回复
+                new_messages = [
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": response_text}
+                ]
+                st.session_state["messages"].extend(new_messages)
+                
+            except Exception as e:
+                st.error(text["api_error"])
+                st.exception(e)
+
+        # 重新渲染整个对话历史，确保最新的对话显示在最上面
+        st.experimental_rerun()  # 强制刷新页面，确保对话历史按照预期顺序显示
+
+    else:
+        st.warning(text["text_unsendable"])
+
+# 显示对话历史（最新的对话在最上面，并用st.divider()分隔）
 if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
     st.markdown("### " + text["response_title"])
 
@@ -210,13 +238,20 @@ if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
     if chat_pairs:
         # 最新的一组问答显示在最上面
         user_msg, assistant_msg = chat_pairs[-1]
+        
+        # 用户提问
+        st.markdown(f"""
+            <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
+                {user_msg["content"]}
+            </div>
+        """, unsafe_allow_html=True)
 
         # AI 回答
         st.markdown(f"""
-            <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"> {assistant_msg["content"]} </div> """, unsafe_allow_html=True)
-
-        # 用户提问
-        st.markdown(f""" <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"> {user_msg["content"]} </div> """, unsafe_allow_html=True)
+            <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
+                {assistant_msg["content"]}
+            </div>
+        """, unsafe_allow_html=True)
 
         # 如果还有更多的历史对话，则添加一个分割线
         if len(chat_pairs) > 1:
@@ -237,36 +272,6 @@ if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
                     {assistant_msg["content"]}
                 </div>
             """, unsafe_allow_html=True)
-            
-# 提交后处理部分
-image_part = st.session_state.get("image_part")
-if submitted:
-    if prompt and image_part:
-        with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
-            try:
-                model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
-                response = model.generate_content([prompt, image_part])
-                response_text = response.text
-                # 添加到消息历史，并立即显示回复
-                new_messages = [
-                    {"role": "user", "content": prompt},
-                    {"role": "assistant", "content": response_text}
-                ]
-                st.session_state["messages"].extend(new_messages)
-                
-                for msg in new_messages:
-                    bubble_style = (
-                        "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
-                        if msg["role"] == "user"
-                        else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
-                    )
-                    st.markdown(f'<div style="{bubble_style}">{msg["content"]}</div>', unsafe_allow_html=True)
-                    
-            except Exception as e:
-                st.error(text["api_error"])
-                st.exception(e)
-    else:
-        st.warning(text["text_unsendable"])
 
 # 添加“重新提问”按钮（Reask）
 if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
