@@ -194,14 +194,21 @@ with st.form("question_form", clear_on_submit=True):  # 这里设置True
         submitted = st.form_submit_button(text["send"])
         
 # 显示对话历史（倒序）
-for message in reversed(st.session_state["messages"]):
-    if message["role"] != "system":
-        bubble_style = (
-            "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
-            if message["role"] == "user" 
-            else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
-        )
-        st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
+if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
+    st.divider()
+    st.markdown("### " + text["response_title"])
+    for i in range(len(st.session_state["messages"]) - 1, 0, -1): # 跳过系统消息从最后开始循环
+        if st.session_state["messages"][i]["role"] == "assistant" and st.session_state["messages"][i-1]["role"] == "user":
+            assistant_msg = st.session_state["messages"][i]
+            user_msg = st.session_state["messages"][i-1]
+            
+            # AI的回答
+            bubble_style_assistant = "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
+            st.markdown(f'<div style="{bubble_style_assistant}">{assistant_msg["content"]}</div>', unsafe_allow_html=True)
+            
+            # 用户的提问
+            bubble_style_user = "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
+            st.markdown(f'<div style="{bubble_style_user}">{user_msg["content"]}</div>', unsafe_allow_html=True)
 
 # 提交后处理部分
 image_part = st.session_state.get("image_part")
@@ -212,34 +219,18 @@ if submitted:
                 model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
                 response = model.generate_content([prompt, image_part])
                 response_text = response.text
-                # 添加到消息历史的开头，并立即显示回复
+                # 添加到消息历史，并立即显示回复
                 new_messages = [
                     {"role": "user", "content": prompt},
                     {"role": "assistant", "content": response_text}
                 ]
-                st.session_state["messages"] = new_messages + st.session_state["messages"]  # 插入到开头
-                for msg in new_messages:
-                    bubble_style = (
-                        "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
-                        if msg["role"] == "user"
-                        else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
-                    )
-                    st.markdown(f'<div style="{bubble_style}">{msg["content"]}</div>', unsafe_allow_html=True)
+                st.session_state["messages"].extend(new_messages)
+###
             except Exception as e:
                 st.error(text["api_error"])
                 st.exception(e)
     else:
         st.warning(text["text_unsendable"])
-
-# 显示对话历史（无需再使用reversed）
-for message in st.session_state["messages"]:
-    if message["role"] != "system":
-        bubble_style = (
-            "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
-            if message["role"] == "user" 
-            else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
-        )
-        st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
 
 # 添加“重新提问”按钮（Reask）
 if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
