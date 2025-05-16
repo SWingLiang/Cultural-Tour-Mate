@@ -165,7 +165,6 @@ if st.session_state["show_camera"]:
             img = Image.open(camera_img)
             st.session_state["image_part"] = {"mime_type": "image/jpeg", "data": compress_image(img)}
             st.image(img, caption=text["photo_captured"], use_container_width=True)
-            st.rerun()  # 强制刷新页面，确保 image_part 生效
 
 # 上传模块
 st.divider()
@@ -179,7 +178,6 @@ if upload_img:
         img = Image.open(upload_img)
         st.session_state["image_part"] = {"mime_type": "image/jpeg", "data": compress_image(img)}
         st.image(img, caption=text["photo_uploaded"], use_container_width=True)
-        st.rerun()  # 强制刷新页面，确保 image_part 生效
 
 # 输入与提问
 # 提问表单（支持回车键提交 + 语言提示）
@@ -188,44 +186,50 @@ st.markdown("### " + text["desc"])
 st.markdown(text["input_placeholder"])
 
 # 清空输入框
-with st.form("question_form"): 
+with st.form("question_form", clear_on_submit=True):  # 这里设置True
     cols = st.columns([5, 1])
     with cols[0]:
-        prompt = st.text_input(label=" ", key="prompt_input", label_visibility="collapsed")
+        prompt = st.text_input(label="### ", key="prompt_input", label_visibility="collapsed")
     with cols[1]:
         submitted = st.form_submit_button(text["send"])
         
-# 提交后处理部分 应该放在 显示对话历史之前
-if submitted:
-    image_part = st.session_state.get("image_part")
-    if prompt and image_part:
-        with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
-            try:
-                model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
-                response = model.generate_content([prompt, image_part])
-                response_text = response.text
-                
-                # 添加新的用户提问和AI回答到会话状态的开头
-                st.session_state["messages"].insert(1, {"role": "assistant", "content": response_text})
-                st.session_state["messages"].insert(1, {"role": "user", "content": prompt})
-                
-                # 可选择在这里手动清除输入框内容
-                st.session_state["prompt_input"] = ""
-            except Exception as e:
-                st.error(text["api_error"])
-                st.exception(e)
-    else:
-        st.warning(text["text_unsendable"])
-
 # 显示对话历史（倒序）
-for message in reversed(st.session_state["messages"]):  # 首先反转整个列表以保证最新的消息最先处理
-    if message["role"] != "system":  # 跳过系统消息
+for message in reversed(st.session_state["messages"]):
+    if message["role"] != "system":
         bubble_style = (
             "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
             if message["role"] == "user" 
             else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
         )
         st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
+
+# 提交后处理部分
+image_part = st.session_state.get("image_part")
+if submitted:
+    if prompt and image_part:
+        with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
+            try:
+                model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
+                response = model.generate_content([prompt, image_part])
+                response_text = response.text
+                # 添加到消息历史，并立即显示回复
+                new_messages = [
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": response_text}
+                ]
+                st.session_state["messages"].extend(new_messages)
+                for msg in new_messages:
+                    bubble_style = (
+                        "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
+                        if msg["role"] == "user"
+                        else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
+                    )
+                    st.markdown(f'<div style="{bubble_style}">{msg["content"]}</div>', unsafe_allow_html=True)
+            except Exception as e:
+                st.error(text["api_error"])
+                st.exception(e)
+    else:
+        st.warning(text["text_unsendable"])
 
 # 添加“重新提问”按钮（Reask）
 if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
@@ -244,5 +248,8 @@ if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
         st.session_state["image_part"] = None
         # 关闭相机视图
         st.session_state["show_camera"] = False
+        # 重置用户输入（可选，确保表单输入框为空）
+        if "prompt_input" in st.session_state:
+            del st.session_state["prompt_input"]
         # 立即刷新页面
         st.rerun()
