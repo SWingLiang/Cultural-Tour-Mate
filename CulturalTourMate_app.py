@@ -204,7 +204,6 @@ for message in reversed(st.session_state["messages"]):
         st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
 
 # 提交后处理部分
-# 提交后处理部分
 image_part = st.session_state.get("image_part")
 if submitted:
     if prompt and image_part:
@@ -228,7 +227,7 @@ if submitted:
                     st.markdown(f'<div style="{bubble_style}">{msg["content"]}</div>', unsafe_allow_html=True)
 
 # 显示对话历史（无需再使用reversed）
-for message in st.session_state["messages"]:
+for message in st.session_state.reversed["messages"]:
     if message["role"] != "system":
         bubble_style = (
             "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
