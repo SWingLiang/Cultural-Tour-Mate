@@ -183,19 +183,19 @@ if upload_img:
 st.divider()
 st.markdown("### " + text["desc"])
 st.markdown(text["input_placeholder"])
-with st.form("question_form", clear_on_submit=False):
+
+# 清空输入框
+with st.form("question_form"):  # 移除了 clear_on_submit=True
     cols = st.columns([5, 1])
-
     with cols[0]:
-        prompt = st.text_input(
-            label="### ",  # 实际不会显示
-            key="prompt_input",
-            label_visibility="collapsed"
-        )
-
+        prompt = st.text_input(label="### ", key="prompt_input", label_visibility="collapsed")
     with cols[1]:
-        # 用 st.markdown 或 st.write 添加空行，使按钮下移与输入框底部对齐 
         submitted = st.form_submit_button(text["send"])
+        
+    if submitted:
+        st.write(f"Prompt: {prompt}")  # 调试信息
+        image_part = st.session_state.get("image_part")
+        st.write(f"Image Part Available: {bool(image_part)}")  // 调试信息
 
 # [生成回答]
 if submitted:
