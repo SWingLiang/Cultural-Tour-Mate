@@ -235,18 +235,18 @@ if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
     if chat_pairs:
         # 最新的一组问答显示在最上面
         user_msg, assistant_msg = chat_pairs[-1]
-
-        # AI 回答
-        st.markdown(f"""
-            <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
-                {assistant_msg["content"]}
-            </div>
-        """, unsafe_allow_html=True)
-
+        
         # 用户提问
         st.markdown(f"""
             <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
                 {user_msg["content"]}
+            </div>
+        """, unsafe_allow_html=True)
+        
+        # AI 回答
+        st.markdown(f"""
+            <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
+                {assistant_msg["content"]}
             </div>
         """, unsafe_allow_html=True)
 
