@@ -204,6 +204,7 @@ for message in reversed(st.session_state["messages"]):
         st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
 
 # 提交后处理部分
+# 提交后处理部分
 image_part = st.session_state.get("image_part")
 if submitted:
     if prompt and image_part:
@@ -212,12 +213,12 @@ if submitted:
                 model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
                 response = model.generate_content([prompt, image_part])
                 response_text = response.text
-                # 添加到消息历史，并立即显示回复
+                # 添加到消息历史的开头，并立即显示回复
                 new_messages = [
                     {"role": "user", "content": prompt},
                     {"role": "assistant", "content": response_text}
                 ]
-                st.session_state["messages"].extend(new_messages)
+                st.session_state["messages"] = new_messages + st.session_state["messages"]  # 插入到开头
                 for msg in new_messages:
                     bubble_style = (
                         "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
@@ -225,6 +226,21 @@ if submitted:
                         else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
                     )
                     st.markdown(f'<div style="{bubble_style}">{msg["content"]}</div>', unsafe_allow_html=True)
+            except Exception as e:
+                st.error(text["api_error"])
+                st.exception(e)
+    else:
+        st.warning(text["text_unsendable"])
+
+# 显示对话历史（无需再使用reversed）
+for message in st.session_state["messages"]:
+    if message["role"] != "system":
+        bubble_style = (
+            "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
+            if message["role"] == "user" 
+            else "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
+        )
+        st.markdown(f'<div style="{bubble_style}">{message["content"]}</div>', unsafe_allow_html=True)
             except Exception as e:
                 st.error(text["api_error"])
                 st.exception(e)
