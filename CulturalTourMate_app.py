@@ -193,33 +193,39 @@ with st.form("question_form", clear_on_submit=True):  # 这里设置True
     with cols[1]:
         submitted = st.form_submit_button(text["send"])
         
-# 显示对话历史（倒序显示，确保最新的对话在最上面）
-st.markdown("### " + text["response_title"])
+# 显示对话历史（最新的对话在最上面，并用 st.divider() 分隔）
+if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
+    st.markdown("### " + text["response_title"])
 
-# 提取所有 user 和 assistant 的消息
-chat_pairs = []
-messages = [m for m in st.session_state["messages"] if m["role"] in ("user", "assistant")]
+    # 提取所有 user 和 assistant 的消息
+    chat_pairs = []
+    messages = [m for m in st.session_state["messages"] if m["role"] in ("user", "assistant")]
 
-# 按照两个一组打包成对话对（user -> assistant）
-for i in range(0, len(messages) - 1, 2):
-    if i + 1 < len(messages):
-        chat_pairs.append((messages[i], messages[i + 1]))
+    # 按照两个一组打包成对话对（user -> assistant）
+    for i in range(0, len(messages) - 1, 2):
+        if i + 1 < len(messages):
+            chat_pairs.append((messages[i], messages[i + 1]))
 
-# 反转整个列表，让最新的对话在最上面
-for user_msg, assistant_msg in reversed(chat_pairs):
-    # 用户提问
-    st.markdown(f"""
-        <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
-            {user_msg["content"]}
-        </div>
-    """, unsafe_allow_html=True)
+    # 反转整个列表，让最新的对话在最上面
+    for idx, (user_msg, assistant_msg) in enumerate(reversed(chat_pairs)):
+        # AI 回答
+        st.markdown(f"""
+            <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
+                {assistant_msg["content"]}
+            </div>
+        """, unsafe_allow_html=True)
 
-    # AI 回答
-    st.markdown(f"""
-        <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
-            {assistant_msg["content"]}
-        </div>
-    """, unsafe_allow_html=True)
+        # 用户提问
+        st.markdown(f"""
+            <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
+                {user_msg["content"]}
+            </div>
+        """, unsafe_allow_html=True)
+
+        # 如果不是最后一个对话，则添加分隔线
+        if idx < len(chat_pairs) - 1:
+            st.divider()
+            
 # 提交后处理部分
 image_part = st.session_state.get("image_part")
 if submitted:
