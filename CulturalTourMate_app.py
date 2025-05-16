@@ -193,22 +193,30 @@ with st.form("question_form", clear_on_submit=True):  # 这里设置True
     with cols[1]:
         submitted = st.form_submit_button(text["send"])
         
-# 显示对话历史（确保最新的对话在最上面）
-if len(st.session_state["messages"]) > 1:
-    st.divider()
-    st.markdown("### " + text["response_title"])
-    messages_to_display = st.session_state["messages"][1:]  # 跳过系统消息
-    messages_to_display.reverse()  # 反转列表，让最新的消息在前
+# 显示对话历史（最新的对话在最上面）
+st.markdown("### " + text["response_title"])
+# 只取 user 和 assistant 的记录，并两两成对处理
+filtered_messages = [m for m in st.session_state["messages"] if m["role"] in ("user", "assistant")]
 
-    for i in range(0, len(messages_to_display)-1):
-        if messages_to_display[i]["role"] == "user" and messages_to_display[i+1]["role"] == "assistant":
-            # 用户的提问
-            bubble_style_user = "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
-            st.markdown(f'<div style="{bubble_style_user}">{messages_to_display[i]["content"]}</div>', unsafe_allow_html=True)
+# 按时间倒序排列，确保最新的一组问答在最上
+for i in range(len(filtered_messages) - 1, 0, -2):
+    if i >= 1 and filtered_messages[i]["role"] == "assistant" and filtered_messages[i - 1]["role"] == "user":
+        user_msg = filtered_messages[i - 1]
+        assistant_msg = filtered_messages[i]
 
-            # AI的回答
-            bubble_style_assistant = "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
-            st.markdown(f'<div style="{bubble_style_assistant}">{messages_to_display[i+1]["content"]}</div>', unsafe_allow_html=True)
+        # 用户提问
+        st.markdown(f"""
+            <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
+                {user_msg["content"]}
+            </div>
+        """, unsafe_allow_html=True)
+
+        # AI 回答
+        st.markdown(f"""
+            <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
+                {assistant_msg["content"]}
+            </div>
+        """, unsafe_allow_html=True)
 
 # 提交后处理部分
 image_part = st.session_state.get("image_part")
