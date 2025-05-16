@@ -207,7 +207,9 @@ for message in reversed(st.session_state["messages"]):  # 首先反转整个列�
 
 # 提交后处理部分
 if submitted:
+    st.write("Form Submitted!")  // 调试信息
     image_part = st.session_state.get("image_part")
+    st.write(f"Image Part: {bool(image_part)}")  // 调试信息
     # 添加调试信息
     if prompt and image_part:
         st.write(f"Prompt: {prompt}")  # 调试：显示输入的提示信息
