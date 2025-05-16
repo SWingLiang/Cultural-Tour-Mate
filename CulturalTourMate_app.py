@@ -194,24 +194,32 @@ with st.form("question_form", clear_on_submit=True):  # 这里设置True
         submitted = st.form_submit_button(text["send"])
         
 # 显示对话历史（倒序显示，确保最新的对话在最上面）
-if len(st.session_state["messages"]) > 1: # 确保至少有一轮对话
-    st.divider()
-    st.markdown("### " + text["response_title"])
-    
-    # 反转整个消息列表，使最新的消息在前
-    for i in range(len(st.session_state["messages"]) - 1, 0, -2): # 步长为2，因为我们一次处理一对消息
-        if i-1 >= 0 and st.session_state["messages"][i]["role"] == "assistant" and st.session_state["messages"][i-1]["role"] == "user":
-            assistant_msg = st.session_state["messages"][i]
-            user_msg = st.session_state["messages"][i-1]
+st.markdown("### " + text["response_title"])
 
-            # AI的回答
-            bubble_style_assistant = "text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"
-            st.markdown(f'<div style="{bubble_style_assistant}">{assistant_msg["content"]}</div>', unsafe_allow_html=True)
+# 提取所有 user 和 assistant 的消息
+chat_pairs = []
+messages = [m for m in st.session_state["messages"] if m["role"] in ("user", "assistant")]
 
-            # 用户的提问
-            bubble_style_user = "text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"
-            st.markdown(f'<div style="{bubble_style_user}">{user_msg["content"]}</div>', unsafe_allow_html=True)
+# 按照两个一组打包成对话对（user -> assistant）
+for i in range(0, len(messages) - 1, 2):
+    if i + 1 < len(messages):
+        chat_pairs.append((messages[i], messages[i + 1]))
 
+# 反转整个列表，让最新的对话在最上面
+for user_msg, assistant_msg in reversed(chat_pairs):
+    # 用户提问
+    st.markdown(f"""
+        <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
+            {user_msg["content"]}
+        </div>
+    """, unsafe_allow_html=True)
+
+    # AI 回答
+    st.markdown(f"""
+        <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
+            {assistant_msg["content"]}
+        </div>
+    """, unsafe_allow_html=True)
 # 提交后处理部分
 image_part = st.session_state.get("image_part")
 if submitted:
