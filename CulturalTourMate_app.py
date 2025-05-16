@@ -205,18 +205,10 @@ for i in range(len(filtered_messages) - 1, 0, -2):
         assistant_msg = filtered_messages[i]
 
         # 用户提问
-        st.markdown(f"""
-            <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;">
-                {user_msg["content"]}
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f""" <div style="text-align: right; background-color: #99000033; padding: 10px; border-radius: 12px; margin: 5px 0;"> {user_msg["content"]} </div> """, unsafe_allow_html=True)
 
         # AI 回答
-        st.markdown(f"""
-            <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;">
-                {assistant_msg["content"]}
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f""" <div style="text-align: left; background-color: #55555533; padding: 10px; border-radius: 12px; margin: 5px 0;"> {assistant_msg["content"]} </div> """, unsafe_allow_html=True)
 
 # 提交后处理部分
 image_part = st.session_state.get("image_part")
