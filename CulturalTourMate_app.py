@@ -234,22 +234,3 @@ if submitted:
     else:
         st.warning(text["text_unsendable"])
 
-# 添加“重新提问”按钮（Reask）
-if len(st.session_state["messages"]) > 1:  # 有对话记录才显示按钮
-    st.divider()
-    if st.button(text["reask"]):
-        # 重置消息列表，仅保留系统提示
-        st.session_state["messages"] = [
-            {
-                "role": "system",
-                "content": "Your Cultural-Tour-Mate, a helpful and culturally knowledgeable travel assistant. Don't hesitate to ask..."
-                if lang_code == "en"
-                else "您的文化旅行旅伴，旅途上遇见任何问题都可以问我..."
-            }
-        ]
-        # 重置上传图片数据
-        st.session_state["image_part"] = None
-        # 关闭相机视图
-        st.session_state["show_camera"] = False
-        # 立即刷新页面
-        st.rerun()
