@@ -200,11 +200,7 @@ if submitted:
 # 在处理新消息前显示spinner
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
             try:
-                # ✅ 检查 SDK 版本
                 import google.generativeai as genai
-                import pkg_resources
-                version = pkg_resources.get_distribution("google-generativeai").version
-                st.write(f"🔍 Gemini SDK version: {version}")
         
                 # ✅ 自动检测模型（容错）
                 available_models = []
@@ -219,7 +215,6 @@ if submitted:
                 elif any("gemini-1.5-flash" in m for m in available_models):
                     model_name = "gemini-1.5-flash"
                 else:
-                    # 🚫 不再使用 1.0-pro，改为默认 1.5-flash 以避免404
                     model_name = "gemini-1.5-flash"
                     st.warning("⚠️ Gemini 1.5 模型未检测到，已默认使用 gemini-1.5-flash")
         
@@ -240,12 +235,11 @@ if submitted:
                 st.exception(e)
                 st.info(
                     "💡 提示：\n"
-                    "1️⃣ 请确认 requirements.txt 中包含：`google-generativeai>=0.8.3`\n"
+                    "1️⃣ 请确认 requirements.txt 中包含：`google-generativeai>=0.8.3 setuptools`\n"
                     "2️⃣ 请确保 API Key 来自新版 Google AI Studio（https://aistudio.google.com/app/apikey）。\n"
                     "3️⃣ 可尝试手动设置模型名为 gemini-1.5-flash。"
                 )
 
-                
                 # 添加到消息历史
                 new_messages = [
                     {"role": "user", "content": prompt},
