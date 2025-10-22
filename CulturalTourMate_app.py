@@ -198,11 +198,47 @@ image_part = st.session_state.get("image_part")
 if submitted:
     if prompt and image_part:
         # 在处理新消息前显示spinner
-        with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
-            try:
-                model = genai.GenerativeModel("gemini-1.5-pro")
-                response = model.generate_content([prompt, image_part])
-                response_text = response.text
+       with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
+    try:
+        # ✅ 自动检测 SDK 版本并设置模型名
+        available_models = []
+        try:
+            available_models = [m.name for m in genai.list_models()]
+        except Exception:
+            st.warning("⚠️ Unable to list models, using default gemini-1.5-pro.")
+        
+        # ✅ 模型选择逻辑
+        if any("gemini-1.5-pro" in m for m in available_models):
+            model_name = "gemini-1.5-pro"
+        elif any("gemini-1.5-flash" in m for m in available_models):
+            model_name = "gemini-1.5-flash"
+        else:
+            # 兜底方案
+            model_name = "gemini-1.0-pro"
+            st.warning("⚠️ Gemini 1.5 模型不可用，切换至 gemini-1.0-pro")
+
+        # ✅ 初始化模型
+        model = genai.GenerativeModel(model_name)
+        response = model.generate_content([prompt, image_part])
+        response_text = getattr(response, "text", str(response))
+
+        # ✅ 保存消息
+        new_messages = [
+            {"role": "user", "content": prompt},
+            {"role": "assistant", "content": response_text}
+        ]
+        st.session_state["messages"].extend(new_messages)
+
+    except Exception as e:
+        st.error(text["api_error"])
+        st.exception(e)
+        st.info(
+            "💡 提示：\n"
+            "1️⃣ 你的 google-generativeai 库版本可能太旧，请在 Streamlit Cloud 的 requirements.txt 中加上：\n"
+            "`google-generativeai>=0.8.3`\n\n"
+            "2️⃣ 你的 API Key 可能来自旧版 MakerSuite，请前往：https://aistudio.google.com/app/apikey 重新生成 Gemini API Key。"
+        )
+
                 
                 # 添加到消息历史
                 new_messages = [
