@@ -1,3 +1,8 @@
+streamlit>=1.38
+google-generativeai>=0.8.3
+Pillow
+python-dotenv
+setuptools
 streamlit>=1.32.0
 streamlit-webrtc>=0.45.0
 google-generativeai>=0.5.0
@@ -14,4 +19,3 @@ gTTS
 pydub
 playsound; platform_system == "Windows"  # Windows 使用 playsound 播放音频
 pygame; platform_system != "Windows"     # 非 Windows 系统使用 pygame 播放音频
-setuptools
