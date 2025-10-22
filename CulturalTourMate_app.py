@@ -27,7 +27,7 @@ t = {
         "send": "🎈 Send",
         "response": "Cultural Insight",
         "feedback": "🦄 Was this helpful? Feel free to ask more.",
-        "developer": "Developer: Sin-Wing | Xianrong Liang ",
+        "developer": "Developer: Xianrong Liang (Sinwing); Abhay Soni; Shayan Majid Phamba; Gurjot Singh.",
         "upload_note": "Select and upload an image from your device, the image is limited to 2 MB.",
         "camera_note": "Notice: If the camera cannot be opened, please close it and try again. Some terminals might not convert↔️ the rear camera, suggest uploading photos.",
         "input_placeholder": "Type what you want to learn about the image here...",
@@ -56,7 +56,7 @@ t = {
         "send": "🎈 发送",
         "response": "文化背景信息",
         "feedback": "🦄 这个回答有帮助吗？欢迎继续提问。",
-        "developer": "开发者：梁羡荣 (Leung, Sin-Wing)",
+        "developer": "开发团队：梁羡荣(Sinwing Leung); 阿布依·索尼(Abhay Soni), 萨彦·马吉德(Shayan Majid), 古尔佐特·辛格(Gurjot Singh)",
         "upload_note": "从您的设备中选择并上传一张图片，大小不超2M。",
         "camera_note": "提示：若无法打开相机，请关闭相机重试；部分终端不能转换↔️后置摄像头，建议上传照片。",
         "input_placeholder": "请在文本框中描述您的问题...",
@@ -200,7 +200,7 @@ if submitted:
         # 在处理新消息前显示spinner
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
             try:
-                model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
+                model = genai.GenerativeModel("gemini-1.5-pro")
                 response = model.generate_content([prompt, image_part])
                 response_text = response.text
                 
