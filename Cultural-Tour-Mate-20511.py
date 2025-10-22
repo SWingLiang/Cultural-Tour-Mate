@@ -200,7 +200,7 @@ if submitted:
         # 在处理新消息前显示spinner
         with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
             try:
-                model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
+                model = genai.GenerativeModel("gemini-1.5-pro")
                 response = model.generate_content([prompt, image_part])
                 response_text = response.text
                 
