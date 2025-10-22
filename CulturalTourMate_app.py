@@ -197,25 +197,31 @@ with st.form("question_form", clear_on_submit=True):  # 这里设置True
 image_part = st.session_state.get("image_part")
 if submitted:
     if prompt and image_part:
-        # 在处理新消息前显示spinner
-       with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
+# 在处理新消息前显示spinner
+        with st.spinner("🧠 Generating insight..." if lang_code == "en" else "🧠 正在思考，请稍候..."):
             try:
-                # ✅ 自动检测 SDK 版本并设置模型名
+                # ✅ 检查 SDK 版本
+                import google.generativeai as genai
+                import pkg_resources
+                version = pkg_resources.get_distribution("google-generativeai").version
+                st.write(f"🔍 Gemini SDK version: {version}")
+        
+                # ✅ 自动检测模型（容错）
                 available_models = []
                 try:
                     available_models = [m.name for m in genai.list_models()]
                 except Exception:
-                    st.warning("⚠️ Unable to list models, using default gemini-1.5-pro.")
-                
+                    st.warning("⚠️ Unable to list models, using default gemini-1.5-flash.")
+        
                 # ✅ 模型选择逻辑
                 if any("gemini-1.5-pro" in m for m in available_models):
                     model_name = "gemini-1.5-pro"
                 elif any("gemini-1.5-flash" in m for m in available_models):
                     model_name = "gemini-1.5-flash"
                 else:
-                    # 兜底方案
-                    model_name = "gemini-1.0-pro"
-                    st.warning("⚠️ Gemini 1.5 模型不可用，切换至 gemini-1.0-pro")
+                    # 🚫 不再使用 1.0-pro，改为默认 1.5-flash 以避免404
+                    model_name = "gemini-1.5-flash"
+                    st.warning("⚠️ Gemini 1.5 模型未检测到，已默认使用 gemini-1.5-flash")
         
                 # ✅ 初始化模型
                 model = genai.GenerativeModel(model_name)
@@ -234,9 +240,9 @@ if submitted:
                 st.exception(e)
                 st.info(
                     "💡 提示：\n"
-                    "1️⃣ 你的 google-generativeai 库版本可能太旧，请在 Streamlit Cloud 的 requirements.txt 中加上：\n"
-                    "`google-generativeai>=0.8.3`\n\n"
-                    "2️⃣ 你的 API Key 可能来自旧版 MakerSuite，请前往：https://aistudio.google.com/app/apikey 重新生成 Gemini API Key。"
+                    "1️⃣ 请确认 requirements.txt 中包含：`google-generativeai>=0.8.3`\n"
+                    "2️⃣ 请确保 API Key 来自新版 Google AI Studio（https://aistudio.google.com/app/apikey）。\n"
+                    "3️⃣ 可尝试手动设置模型名为 gemini-1.5-flash。"
                 )
 
                 
